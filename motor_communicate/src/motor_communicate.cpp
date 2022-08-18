@@ -21,6 +21,7 @@ bool navCallback(nav::Service_msg::Request &request, nav::Service_msg::Response 
 
 //robot function
 void stop();
+void freeStop();
 void robotMove_Xaxis(int speed, int rotation);
 void robotMove_Yaxis(int speed, int rotation);
 void robotRotation(int speed, int rotation);
@@ -28,8 +29,12 @@ void robotRotation(int speed, int rotation);
 
 //data setting
 
-int motor_Rpm_Data[4] = {0, 1000, 2000, 3000};
-int motor_Rpm_Bias[4] = {0, 100, 200, 300};
+int motor_Rpm_X_Data[4] = {0, 500, 1000, 1500};
+int motor_Rpm_X_Bias[4] = {0, 50, 100, 150};
+
+int motor_Rpm_Y_Data[4] = {0, 1000, 2000, 3000};
+int motor_Rpm_Y_Bias[4] = {0, 100, 200, 300};
+
 int motor_Rpm_Rotation = 1500;
 
 
@@ -52,15 +57,15 @@ int main(int argc, char **argv){
     serialInit();
 
     //init wheel object
-    robot::wheelFL.settingRpmData(robot::motor_Rpm_Data, sizeof(robot::motor_Rpm_Data)/sizeof(int));
-    robot::wheelFR.settingRpmData(robot::motor_Rpm_Data, sizeof(robot::motor_Rpm_Data)/sizeof(int));
-    robot::wheelRL.settingRpmData(robot::motor_Rpm_Data, sizeof(robot::motor_Rpm_Data)/sizeof(int));
-    robot::wheelRR.settingRpmData(robot::motor_Rpm_Data, sizeof(robot::motor_Rpm_Data)/sizeof(int));
+    robot::wheelFL.settingRpmData(robot::motor_Rpm_X_Data, sizeof(robot::motor_Rpm_X_Data)/sizeof(int), robot::motor_Rpm_Y_Data, sizeof(robot::motor_Rpm_Y_Data)/sizeof(int));
+    robot::wheelFR.settingRpmData(robot::motor_Rpm_X_Data, sizeof(robot::motor_Rpm_X_Data)/sizeof(int), robot::motor_Rpm_Y_Data, sizeof(robot::motor_Rpm_Y_Data)/sizeof(int));
+    robot::wheelRL.settingRpmData(robot::motor_Rpm_X_Data, sizeof(robot::motor_Rpm_X_Data)/sizeof(int), robot::motor_Rpm_Y_Data, sizeof(robot::motor_Rpm_Y_Data)/sizeof(int));
+    robot::wheelRR.settingRpmData(robot::motor_Rpm_X_Data, sizeof(robot::motor_Rpm_X_Data)/sizeof(int), robot::motor_Rpm_Y_Data, sizeof(robot::motor_Rpm_Y_Data)/sizeof(int));
 
-    robot::wheelFL.settingRpmBias(robot::motor_Rpm_Bias, sizeof(robot::motor_Rpm_Bias)/sizeof(int));
-    robot::wheelFR.settingRpmBias(robot::motor_Rpm_Bias, sizeof(robot::motor_Rpm_Bias)/sizeof(int));
-    robot::wheelRL.settingRpmBias(robot::motor_Rpm_Bias, sizeof(robot::motor_Rpm_Bias)/sizeof(int));
-    robot::wheelRR.settingRpmBias(robot::motor_Rpm_Bias, sizeof(robot::motor_Rpm_Bias)/sizeof(int));
+    robot::wheelFL.settingRpmBias(robot::motor_Rpm_X_Bias, sizeof(robot::motor_Rpm_X_Bias)/sizeof(int), robot::motor_Rpm_Y_Bias, sizeof(robot::motor_Rpm_Y_Bias)/sizeof(int));
+    robot::wheelFR.settingRpmBias(robot::motor_Rpm_X_Bias, sizeof(robot::motor_Rpm_X_Bias)/sizeof(int), robot::motor_Rpm_Y_Bias, sizeof(robot::motor_Rpm_Y_Bias)/sizeof(int));
+    robot::wheelRL.settingRpmBias(robot::motor_Rpm_X_Bias, sizeof(robot::motor_Rpm_X_Bias)/sizeof(int), robot::motor_Rpm_Y_Bias, sizeof(robot::motor_Rpm_Y_Bias)/sizeof(int));
+    robot::wheelRR.settingRpmBias(robot::motor_Rpm_X_Bias, sizeof(robot::motor_Rpm_X_Bias)/sizeof(int), robot::motor_Rpm_Y_Bias, sizeof(robot::motor_Rpm_Y_Bias)/sizeof(int));
 
     robot::wheelFL.settingRpmRotation(robot::motor_Rpm_Rotation);
     robot::wheelFR.settingRpmRotation(robot::motor_Rpm_Rotation);
@@ -70,7 +75,9 @@ int main(int argc, char **argv){
     ros::ServiceServer motor_service = rosnh.advertiseService("controller_command", robot::navCallback);
 
     ros::spin();
-    
+
+    robot::stop();
+    robot::freeStop();
     
     return 0;
 }
@@ -108,6 +115,16 @@ void robot::stop(){
     return;
 }
 
+void robot::freeStop(){
+
+    wheelFL.freeStop();
+    wheelFR.freeStop();
+    wheelRL.freeStop();
+    wheelRR.freeStop();
+
+    return;
+}
+
 void robot::robotMove_Xaxis(int speed, int rotation){
     
     if(speed == 0){
@@ -117,22 +134,22 @@ void robot::robotMove_Xaxis(int speed, int rotation){
     }
     else{
         if(rotation == 0){
-            robot::wheelFL.setSpeed(speed, 0);
-            robot::wheelFR.setSpeed(-1*speed, 0);
-            robot::wheelRL.setSpeed(speed, 0);
-            robot::wheelRR.setSpeed(-1*speed, 0);
+            robot::wheelFL.set_X_Speed(speed, 0);
+            robot::wheelFR.set_X_Speed(-1*speed, 0);
+            robot::wheelRL.set_X_Speed(speed, 0);
+            robot::wheelRR.set_X_Speed(-1*speed, 0);
         }
         else if(rotation == 1){
-            robot::wheelFL.setSpeed(speed, 1);
-            robot::wheelFR.setSpeed(-1*speed, 2);
-            robot::wheelRL.setSpeed(speed, 1);
-            robot::wheelRR.setSpeed(-1*speed, 2);
+            robot::wheelFL.set_X_Speed(speed, 1);
+            robot::wheelFR.set_X_Speed(-1*speed, 2);
+            robot::wheelRL.set_X_Speed(speed, 1);
+            robot::wheelRR.set_X_Speed(-1*speed, 2);
         }
         else if(rotation == 2){
-            robot::wheelFL.setSpeed(speed, 2);
-            robot::wheelFR.setSpeed(-1*speed, 1);
-            robot::wheelRL.setSpeed(speed, 2);
-            robot::wheelRR.setSpeed(-1*speed, 1);
+            robot::wheelFL.set_X_Speed(speed, 2);
+            robot::wheelFR.set_X_Speed(-1*speed, 1);
+            robot::wheelRL.set_X_Speed(speed, 2);
+            robot::wheelRR.set_X_Speed(-1*speed, 1);
         }
     }
 
@@ -148,42 +165,42 @@ void robot::robotMove_Yaxis(int speed, int rotation){
     }
     else if(speed > 0){
         if(rotation == 0){
-            robot::wheelFL.setSpeed(-1*speed, 0);
-            robot::wheelFR.setSpeed(-1*speed, 0);
-            robot::wheelRL.setSpeed(speed, 0);
-            robot::wheelRR.setSpeed(speed, 0);
+            robot::wheelFL.set_Y_Speed(-1*speed, 0);
+            robot::wheelFR.set_Y_Speed(-1*speed, 0);
+            robot::wheelRL.set_Y_Speed(speed, 0);
+            robot::wheelRR.set_Y_Speed(speed, 0);
         }
         else if(rotation == 1){
-            robot::wheelFL.setSpeed(-1*speed, 1);
-            robot::wheelFR.setSpeed(-1*speed, 1);
-            robot::wheelRL.setSpeed(speed, 2);
-            robot::wheelRR.setSpeed(speed, 2);
+            robot::wheelFL.set_Y_Speed(-1*speed, 1);
+            robot::wheelFR.set_Y_Speed(-1*speed, 1);
+            robot::wheelRL.set_Y_Speed(speed, 2);
+            robot::wheelRR.set_Y_Speed(speed, 2);
         }
         else if(rotation == 2){
-            robot::wheelFL.setSpeed(-1*speed, 2);
-            robot::wheelFR.setSpeed(-1*speed, 2);
-            robot::wheelRL.setSpeed(speed, 1);
-            robot::wheelRR.setSpeed(speed, 1);
+            robot::wheelFL.set_Y_Speed(-1*speed, 2);
+            robot::wheelFR.set_Y_Speed(-1*speed, 2);
+            robot::wheelRL.set_Y_Speed(speed, 1);
+            robot::wheelRR.set_Y_Speed(speed, 1);
         }
     }
     else{
         if(rotation == 0){
-            robot::wheelFL.setSpeed(-1*speed, 0);
-            robot::wheelFR.setSpeed(-1*speed, 0);
-            robot::wheelRL.setSpeed(speed, 0);
-            robot::wheelRR.setSpeed(speed, 0);
+            robot::wheelFL.set_Y_Speed(-1*speed, 0);
+            robot::wheelFR.set_Y_Speed(-1*speed, 0);
+            robot::wheelRL.set_Y_Speed(speed, 0);
+            robot::wheelRR.set_Y_Speed(speed, 0);
         }
         else if(rotation == 1){
-            robot::wheelFL.setSpeed(-1*speed, 2);
-            robot::wheelFR.setSpeed(-1*speed, 2);
-            robot::wheelRL.setSpeed(speed, 1);
-            robot::wheelRR.setSpeed(speed, 1);
+            robot::wheelFL.set_Y_Speed(-1*speed, 2);
+            robot::wheelFR.set_Y_Speed(-1*speed, 2);
+            robot::wheelRL.set_Y_Speed(speed, 1);
+            robot::wheelRR.set_Y_Speed(speed, 1);
         }
         else if(rotation == 2){
-            robot::wheelFL.setSpeed(-1*speed, 1);
-            robot::wheelFR.setSpeed(-1*speed, 1);
-            robot::wheelRL.setSpeed(speed, 2);
-            robot::wheelRR.setSpeed(speed, 2);
+            robot::wheelFL.set_Y_Speed(-1*speed, 1);
+            robot::wheelFR.set_Y_Speed(-1*speed, 1);
+            robot::wheelRL.set_Y_Speed(speed, 2);
+            robot::wheelRR.set_Y_Speed(speed, 2);
         }
     }
 

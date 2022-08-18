@@ -11,18 +11,24 @@ wheel::wheel(uint8_t address){
     return;
 }
 
-void wheel::settingRpmData(int *data, int length){
+void wheel::settingRpmData(int *xdata, int xlength, int *ydata, int ylength){
 
-    this->rpm_Data = data;
-    this->rpm_Data_Length = length;
+    this->rpm_X_Data = xdata;
+    this->rpm_X_Data_Length = xlength;
+
+    this->rpm_Y_Data = ydata;
+    this->rpm_Y_Data_Length = ylength;
 
     return;
 }
 
-void wheel::settingRpmBias(int *data, int length){
+void wheel::settingRpmBias(int *xdata, int xlength, int *ydata, int ylength){
 
-    this->rpm_Bias = data;
-    this->rpm_Bias_Length = length;
+    this->rpm_X_Bias = xdata;
+    this->rpm_X_Bias_Length = xlength;
+
+    this->rpm_Y_Bias = ydata;
+    this->rpm_Y_Bias_Length = ylength;
 
     return;
 }
@@ -34,7 +40,7 @@ void wheel::settingRpmRotation(int speed)
     return;
 }
 
-void wheel::setSpeed(int speed, int bias){
+void wheel::set_X_Speed(int speed, int bias){
 
     if(this->controller_Address == 0){
         return;
@@ -49,15 +55,55 @@ void wheel::setSpeed(int speed, int bias){
 
     short int speedValue;
 
-    if(abs(speed) < this->rpm_Data_Length){    
-        speedValue = (short int)this->rpm_Data[abs(speed)]; 
+    if(abs(speed) < this->rpm_X_Data_Length){    
+        speedValue = (short int)this->rpm_X_Data[abs(speed)]; 
     }
 
     if(bias == 1){
-        speedValue += this->rpm_Bias[abs(speed)];
+        speedValue += this->rpm_X_Bias[abs(speed)];
     }
     else if(bias == 2){
-        speedValue -= this->rpm_Bias[abs(speed)];
+        speedValue -= this->rpm_X_Bias[abs(speed)];
+    }
+
+    if(speed < 0){
+        speedValue = -1*speedValue;
+    }
+
+    this->msg.data[4] = ((speedValue >> 8) & 0xff);
+    this->msg.data[5] = (speedValue & 0xff);
+
+    CRC16Generate(&this->msg);
+    transmitData(&this->msg);
+    receiveData(&this->msg);
+
+    return;
+};
+
+void wheel::set_Y_Speed(int speed, int bias){
+
+    if(this->controller_Address == 0){
+        return;
+    }
+
+    clearMsg();
+
+    this->msg.length = 8;
+    this->msg.data[0] = controller_Address;
+    this->msg.data[1] = 0x06;
+    this->msg.data[3] = 0x43;
+
+    short int speedValue;
+
+    if(abs(speed) < this->rpm_X_Data_Length){    
+        speedValue = (short int)this->rpm_Y_Data[abs(speed)]; 
+    }
+
+    if(bias == 1){
+        speedValue += this->rpm_Y_Bias[abs(speed)];
+    }
+    else if(bias == 2){
+        speedValue -= this->rpm_Y_Bias[abs(speed)];
     }
 
     if(speed < 0){
@@ -118,7 +164,28 @@ void wheel::stop(){
     this->msg.data[0] = controller_Address;
     this->msg.data[1] = 0x06;
     this->msg.data[3] = 0x40;
-    this->msg.data[5] = 0x00;
+    this->msg.data[5] = 0x01;
+
+    CRC16Generate(&this->msg);
+    transmitData(&this->msg);
+    receiveData(&this->msg);
+
+    return;
+}
+
+void wheel::freeStop(){
+
+    if(this->controller_Address == 0){
+        return;
+    }
+
+    clearMsg();
+
+    this->msg.length = 8;
+    this->msg.data[0] = controller_Address;
+    this->msg.data[1] = 0x06;
+    this->msg.data[3] = 0x40;
+    this->msg.data[5] = 0x02;
 
     CRC16Generate(&this->msg);
     transmitData(&this->msg);
