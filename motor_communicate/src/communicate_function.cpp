@@ -40,7 +40,7 @@ void wheel::settingRpmRotation(int speed)
     return;
 }
 
-void wheel::set_X_Speed(int speed, int bias){
+void wheel::set_X_Speed(int speed, int bias, ros::Publisher &pub){
 
     if(this->controller_Address == 0){
         return;
@@ -77,10 +77,14 @@ void wheel::set_X_Speed(int speed, int bias){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
+    std_msgs::Int32 wheel_Target;
+    wheel_Target.data = speedValue;
+    pub.publish(wheel_Target);
+
     return;
 };
 
-void wheel::set_Y_Speed(int speed, int bias){
+void wheel::set_Y_Speed(int speed, int bias, ros::Publisher &pub){
 
     if(this->controller_Address == 0){
         return;
@@ -117,10 +121,14 @@ void wheel::set_Y_Speed(int speed, int bias){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
+    std_msgs::Int32 wheel_Target;
+    wheel_Target.data = speedValue;
+    pub.publish(wheel_Target);
+
     return;
 };
 
-void wheel::setRoatation(int direction){
+void wheel::setRoatation(int direction, ros::Publisher &pub){
 
     if(this->controller_Address == 0){
         return;
@@ -149,10 +157,14 @@ void wheel::setRoatation(int direction){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
+    std_msgs::Int32 wheel_Target;
+    wheel_Target.data = speedValue;
+    pub.publish(wheel_Target);
+
     return;
 }
 
-void wheel::stop(){
+void wheel::stop(ros::Publisher &pub){
 
     if(this->controller_Address == 0){
         return;
@@ -170,10 +182,14 @@ void wheel::stop(){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
+    std_msgs::Int32 wheel_Target;
+    wheel_Target.data = 0;
+    pub.publish(wheel_Target);
+
     return;
 }
 
-void wheel::freeStop(){
+void wheel::freeStop(ros::Publisher &pub){
 
     if(this->controller_Address == 0){
         return;
@@ -190,6 +206,49 @@ void wheel::freeStop(){
     CRC16Generate(&this->msg);
     transmitData(&this->msg);
     receiveData(&this->msg);
+
+    std_msgs::Int32 wheel_Target;
+    wheel_Target.data = 0;
+    pub.publish(wheel_Target);
+
+    return;
+}
+
+void wheel::getRpm(ros::Publisher &pub){
+
+    clearMsg();
+    this->msg.length = 8;
+    this->msg.data[0] = this->controller_Address;
+    this->msg.data[1] = 0x03;
+
+    this->msg.data[2] = 0x00;
+    this->msg.data[3] = 0x34;
+
+    this->msg.data[4] = 0x00;
+    this->msg.data[5] = 0x02;
+
+    CRC16Generate(&this->msg);
+    transmitData(&this->msg);
+    receiveData(&this->msg);
+
+    if(this->msg.length >= 9){
+        int32_t rpm;
+        rpm |= this->msg.data[3];
+        rpm = (rpm << 8);
+        rpm |= this->msg.data[4];
+
+        if(this->msg.data[6]){
+            rpm = rpm * 10;
+        }
+
+        std_msgs::Int32 wheel_rpm;
+
+        wheel_rpm.data = rpm;
+        pub.publish(wheel_rpm);
+    }
+    else{
+        ROS_INFO("wheel_%d reading rpm error\n", this->controller_Address);
+    }
 
     return;
 }

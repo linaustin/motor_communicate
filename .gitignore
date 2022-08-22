@@ -1,3 +1,5 @@
 2022_tdk_navigation/*
+
 build/*
-CMakeLists.txt
+
+/CMakeLists.txt

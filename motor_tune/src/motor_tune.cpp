@@ -10,6 +10,7 @@ int main(int argc, char **argv){
     int16_t dir;
     int16_t vel;
     int16_t rot;
+    int16_t head;
     
     nav::Service_msg msg;
 
@@ -17,17 +18,15 @@ int main(int argc, char **argv){
 
         std::cout << "enter command :" << std::endl;
 
-        std::cin >> dir >> vel >> rot;
+        std::cin >> dir >> vel >> rot >> head;
+        std::cin.get();
 
         std::cout << std::endl;
 
         msg.request.direction = dir;
         msg.request.velocity = vel;
         msg.request.rotation = rot;
-
-        std::cout << "dir: " << dir << " ";
-        std::cout << "vel: " << vel << " ";
-        std::cout << "rot: " << rot << std::endl;
+        msg.request.rotation = head;
 
         client.call(msg);
         ROS_INFO("call service!");
