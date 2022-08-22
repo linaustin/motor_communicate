@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <nav/Service_msg.h>
 #include <std_msgs/Int32.h>
-#include "motor_communicate/communicate_function.h"
+#include <motor_communicate/communicate_function.h>
 
 namespace robot{
 
@@ -87,15 +87,15 @@ int main(int argc, char **argv){
 
     ros::ServiceServer motor_service = rosNh.advertiseService("controller_command", robot::navCallback);
 
-    robot::wheel_FL_Target = rosNh.advertise<std_msgs::Int32>("wheel_FL_Target", 1000);
-    robot::wheel_FR_Target = rosNh.advertise<std_msgs::Int32>("wheel_FR_Target", 1000);
-    robot::wheel_RL_Target = rosNh.advertise<std_msgs::Int32>("wheel_RL_Target", 1000);
-    robot::wheel_RR_Target = rosNh.advertise<std_msgs::Int32>("wheel_RR_Target", 1000);
+    robot::wheel_FL_Target = rosNh.advertise<std_msgs::Int32>("/wheel_FL_Target", 10);
+    robot::wheel_FR_Target = rosNh.advertise<std_msgs::Int32>("/wheel_FR_Target", 10);
+    robot::wheel_RL_Target = rosNh.advertise<std_msgs::Int32>("/wheel_RL_Target", 10);
+    robot::wheel_RR_Target = rosNh.advertise<std_msgs::Int32>("/wheel_RR_Target", 10);
 
-    robot::wheel_FL_Rpm = rosNh.advertise<std_msgs::Int32>("wheel_FL_Rpm", 1000);
-    robot::wheel_FR_Rpm = rosNh.advertise<std_msgs::Int32>("wheel_FR_Rpm", 1000);
-    robot::wheel_RL_Rpm = rosNh.advertise<std_msgs::Int32>("wheel_RL_Rpm", 1000);
-    robot::wheel_RR_Rpm = rosNh.advertise<std_msgs::Int32>("wheel_RR_Rpm", 1000);
+    robot::wheel_FL_Rpm = rosNh.advertise<std_msgs::Int32>("/wheel_FL_Rpm", 10);
+    robot::wheel_FR_Rpm = rosNh.advertise<std_msgs::Int32>("/wheel_FR_Rpm", 10);
+    robot::wheel_RL_Rpm = rosNh.advertise<std_msgs::Int32>("/wheel_RL_Rpm", 10);
+    robot::wheel_RR_Rpm = rosNh.advertise<std_msgs::Int32>("/wheel_RR_Rpm", 10);
 
     ros::spin();
 
