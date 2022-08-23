@@ -42,14 +42,14 @@ int main(int argc, char **argv){
 
         }
         else if(mode == 3){
-            uint8_t address;
+            int address;
             std::cout << "enter target address:" << std::endl;
             std::cin  >> std::dec >> address;
             std::cin.get();
-            settingController(address);
+            settingController((uint8_t)address);
         }
         else if(mode == 4){
-            uint8_t address;
+            int address;
             char type;
             std::cout << "enter target address:" << std::endl;
             std::cin >> std::dec >> address;
@@ -57,7 +57,7 @@ int main(int argc, char **argv){
             std::cout << "p or i or d ?" << std::endl;
             std::cin >> type;
             std::cin.get();
-            settingPID(address, type);
+            settingPID((uint8_t)address, type);
         }
         else{
             continue;
