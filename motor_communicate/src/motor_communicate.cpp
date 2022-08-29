@@ -97,7 +97,22 @@ int main(int argc, char **argv){
     robot::wheel_RL_Rpm = rosNh.advertise<std_msgs::Int32>("/wheel_RL_Rpm", 10);
     robot::wheel_RR_Rpm = rosNh.advertise<std_msgs::Int32>("/wheel_RR_Rpm", 10);
 
-    ros::spin();
+    while(ros::ok()){
+
+        robot::wheelFL.getRpm(robot::wheel_FL_Rpm);
+        robot::wheelFL.getTargetSpeed(robot::wheel_FL_Target);
+        
+        robot::wheelFR.getRpm(robot::wheel_FR_Rpm);
+        robot::wheelFR.getTargetSpeed(robot::wheel_FR_Target);
+
+        robot::wheelRL.getRpm(robot::wheel_RL_Rpm);
+        robot::wheelRL.getTargetSpeed(robot::wheel_RL_Target);
+
+        robot::wheelRR.getRpm(robot::wheel_RR_Rpm);
+        robot::wheelRR.getTargetSpeed(robot::wheel_RR_Target);
+
+        ros::spinOnce();
+    }
 
     robot::stop();
     robot::freeStop();
@@ -196,22 +211,22 @@ void robot::robotMove_Xaxis(int speed, int rotation){
     }
     else{
         if(rotation == 0){
-            robot::wheelFL.set_X_Speed(speed, 0, robot::wheel_FL_Target);
-            robot::wheelFR.set_X_Speed(-1*speed, 0, robot::wheel_FR_Target);
-            robot::wheelRL.set_X_Speed(speed, 0, robot::wheel_RL_Target);
-            robot::wheelRR.set_X_Speed(-1*speed, 0, robot::wheel_RR_Target);
+            robot::wheelFL.set_X_Speed(speed, 0);
+            robot::wheelFR.set_X_Speed(-1*speed, 0);
+            robot::wheelRL.set_X_Speed(speed, 0);
+            robot::wheelRR.set_X_Speed(-1*speed, 0);
         }
         else if(rotation == 1){
-            robot::wheelFL.set_X_Speed(speed, 1, robot::wheel_FL_Target);
-            robot::wheelFR.set_X_Speed(-1*speed, 2, robot::wheel_FR_Target);
-            robot::wheelRL.set_X_Speed(speed, 1, robot::wheel_RL_Target);
-            robot::wheelRR.set_X_Speed(-1*speed, 2, robot::wheel_RR_Target);
+            robot::wheelFL.set_X_Speed(speed, 1);
+            robot::wheelFR.set_X_Speed(-1*speed, 2);
+            robot::wheelRL.set_X_Speed(speed, 1);
+            robot::wheelRR.set_X_Speed(-1*speed, 2);
         }
         else if(rotation == 2){
-            robot::wheelFL.set_X_Speed(speed, 2, robot::wheel_FL_Target);
-            robot::wheelFR.set_X_Speed(-1*speed, 1, robot::wheel_FR_Target);
-            robot::wheelRL.set_X_Speed(speed, 2, robot::wheel_RL_Target);
-            robot::wheelRR.set_X_Speed(-1*speed, 1, robot::wheel_RR_Target);
+            robot::wheelFL.set_X_Speed(speed, 2);
+            robot::wheelFR.set_X_Speed(-1*speed, 1);
+            robot::wheelRL.set_X_Speed(speed, 2);
+            robot::wheelRR.set_X_Speed(-1*speed, 1);
         }
     }
 
@@ -232,42 +247,42 @@ void robot::robotMove_Yaxis(int speed, int rotation){
     }
     else if(speed > 0){
         if(rotation == 0){
-            robot::wheelFL.set_Y_Speed(-1*speed, 0, robot::wheel_FL_Target);
-            robot::wheelFR.set_Y_Speed(-1*speed, 0, robot::wheel_FR_Target);
-            robot::wheelRL.set_Y_Speed(speed, 0, robot::wheel_RL_Target);
-            robot::wheelRR.set_Y_Speed(speed, 0, robot::wheel_RR_Target);
+            robot::wheelFL.set_Y_Speed(-1*speed, 0);
+            robot::wheelFR.set_Y_Speed(-1*speed, 0);
+            robot::wheelRL.set_Y_Speed(speed, 0);
+            robot::wheelRR.set_Y_Speed(speed, 0);
         }
         else if(rotation == 1){
-            robot::wheelFL.set_Y_Speed(-1*speed, 1, robot::wheel_FL_Target);
-            robot::wheelFR.set_Y_Speed(-1*speed, 1, robot::wheel_FR_Target);
-            robot::wheelRL.set_Y_Speed(speed, 2, robot::wheel_RL_Target);
-            robot::wheelRR.set_Y_Speed(speed, 2, robot::wheel_RR_Target);
+            robot::wheelFL.set_Y_Speed(-1*speed, 1);
+            robot::wheelFR.set_Y_Speed(-1*speed, 1);
+            robot::wheelRL.set_Y_Speed(speed, 2);
+            robot::wheelRR.set_Y_Speed(speed, 2);
         }
         else if(rotation == 2){
-            robot::wheelFL.set_Y_Speed(-1*speed, 2, robot::wheel_FL_Target);
-            robot::wheelFR.set_Y_Speed(-1*speed, 2, robot::wheel_FR_Target);
-            robot::wheelRL.set_Y_Speed(speed, 1, robot::wheel_RL_Target);
-            robot::wheelRR.set_Y_Speed(speed, 1, robot::wheel_RR_Target);
+            robot::wheelFL.set_Y_Speed(-1*speed, 2);
+            robot::wheelFR.set_Y_Speed(-1*speed, 2);
+            robot::wheelRL.set_Y_Speed(speed, 1);
+            robot::wheelRR.set_Y_Speed(speed, 1);
         }
     }
     else{
         if(rotation == 0){
-            robot::wheelFL.set_Y_Speed(-1*speed, 0, robot::wheel_FL_Target);
-            robot::wheelFR.set_Y_Speed(-1*speed, 0, robot::wheel_FR_Target);
-            robot::wheelRL.set_Y_Speed(speed, 0, robot::wheel_RL_Target);
-            robot::wheelRR.set_Y_Speed(speed, 0, robot::wheel_RR_Target);
+            robot::wheelFL.set_Y_Speed(-1*speed, 0);
+            robot::wheelFR.set_Y_Speed(-1*speed, 0);
+            robot::wheelRL.set_Y_Speed(speed, 0);
+            robot::wheelRR.set_Y_Speed(speed, 0);
         }
         else if(rotation == 1){
-            robot::wheelFL.set_Y_Speed(-1*speed, 2, robot::wheel_FL_Target);
-            robot::wheelFR.set_Y_Speed(-1*speed, 2, robot::wheel_FR_Target);
-            robot::wheelRL.set_Y_Speed(speed, 1, robot::wheel_RL_Target);
-            robot::wheelRR.set_Y_Speed(speed, 1, robot::wheel_RR_Target);
+            robot::wheelFL.set_Y_Speed(-1*speed, 2);
+            robot::wheelFR.set_Y_Speed(-1*speed, 2);
+            robot::wheelRL.set_Y_Speed(speed, 1);
+            robot::wheelRR.set_Y_Speed(speed, 1);
         }
         else if(rotation == 2){
-            robot::wheelFL.set_Y_Speed(-1*speed, 1, robot::wheel_FL_Target);
-            robot::wheelFR.set_Y_Speed(-1*speed, 1, robot::wheel_FR_Target);
-            robot::wheelRL.set_Y_Speed(speed, 2, robot::wheel_RL_Target);
-            robot::wheelRR.set_Y_Speed(speed, 2, robot::wheel_RR_Target);
+            robot::wheelFL.set_Y_Speed(-1*speed, 1);
+            robot::wheelFR.set_Y_Speed(-1*speed, 1);
+            robot::wheelRL.set_Y_Speed(speed, 2);
+            robot::wheelRR.set_Y_Speed(speed, 2);
         }
     }
 
@@ -288,16 +303,16 @@ void robot::robotRotation(int speed, int rotation){
     }
 
     if(rotation == 1){
-        robot::wheelFL.setRoatation(1, robot::wheel_FL_Target);
-        robot::wheelFR.setRoatation(1, robot::wheel_FR_Target);
-        robot::wheelRL.setRoatation(1, robot::wheel_RL_Target);
-        robot::wheelRR.setRoatation(1, robot::wheel_RR_Target);
+        robot::wheelFL.setRoatation(1);
+        robot::wheelFR.setRoatation(1);
+        robot::wheelRL.setRoatation(1);
+        robot::wheelRR.setRoatation(1);
     }
     else if(rotation == 2){
-        robot::wheelFL.setRoatation(2, robot::wheel_FL_Target);
-        robot::wheelFR.setRoatation(2, robot::wheel_FR_Target);
-        robot::wheelRL.setRoatation(2, robot::wheel_RL_Target);
-        robot::wheelRR.setRoatation(2, robot::wheel_RR_Target);
+        robot::wheelFL.setRoatation(2);
+        robot::wheelFR.setRoatation(2);
+        robot::wheelRL.setRoatation(2);
+        robot::wheelRR.setRoatation(2);
     }
 
     robot::wheelFL.getRpm(robot::wheel_FL_Rpm);

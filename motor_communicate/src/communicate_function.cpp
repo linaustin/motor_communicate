@@ -40,7 +40,7 @@ void wheel::settingRpmRotation(int speed)
     return;
 }
 
-void wheel::set_X_Speed(int speed, int bias, ros::Publisher &pub){
+void wheel::set_X_Speed(int speed, int bias){
 
     if(this->controller_Address == 0){
         return;
@@ -77,14 +77,12 @@ void wheel::set_X_Speed(int speed, int bias, ros::Publisher &pub){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
-    std_msgs::Int32 wheel_Target;
-    wheel_Target.data = speedValue;
-    pub.publish(wheel_Target);
-
+    this->target_Speed = speedValue;
+    
     return;
 };
 
-void wheel::set_Y_Speed(int speed, int bias, ros::Publisher &pub){
+void wheel::set_Y_Speed(int speed, int bias){
 
     if(this->controller_Address == 0){
         return;
@@ -121,14 +119,12 @@ void wheel::set_Y_Speed(int speed, int bias, ros::Publisher &pub){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
-    std_msgs::Int32 wheel_Target;
-    wheel_Target.data = speedValue;
-    pub.publish(wheel_Target);
+    this->target_Speed = speedValue;
 
     return;
 };
 
-void wheel::setRoatation(int direction, ros::Publisher &pub){
+void wheel::setRoatation(int direction){
 
     if(this->controller_Address == 0){
         return;
@@ -157,9 +153,9 @@ void wheel::setRoatation(int direction, ros::Publisher &pub){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
-    std_msgs::Int32 wheel_Target;
-    wheel_Target.data = speedValue;
-    pub.publish(wheel_Target);
+
+    this->target_Speed = speedValue;
+    
 
     return;
 }
@@ -249,6 +245,15 @@ void wheel::getRpm(ros::Publisher &pub){
     else{
         ROS_INFO("wheel_%d reading rpm error\n", this->controller_Address);
     }
+
+    return;
+}
+
+void wheel::getTargetSpeed(ros::Publisher &pub){
+
+    std_msgs::Int32 wheel_Target;
+    wheel_Target.data = this->target_Speed;
+    pub.publish(wheel_Target);
 
     return;
 }

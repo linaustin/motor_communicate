@@ -19,13 +19,14 @@ class wheel{
     void settingRpmBias(int *xdata, int xlength, int *ydata, int ylength);
     void settingRpmRotation(int speed);
 
-    void set_X_Speed(int speed, int bias, ros::Publisher &pub);
-    void set_Y_Speed(int speed, int bias, ros::Publisher &pub);
-    void setRoatation(int direction, ros::Publisher &pub);
+    void set_X_Speed(int speed, int bias);
+    void set_Y_Speed(int speed, int bias);
+    void setRoatation(int direction);
     void stop(ros::Publisher &pub);
     void freeStop(ros::Publisher &pub);
 
     void getRpm(ros::Publisher &pub);
+    void getTargetSpeed(ros::Publisher &pub);
 
     private:
 
@@ -48,6 +49,8 @@ class wheel{
     int rpm_Y_Bias_Length;
 
     int rpm_Rotation;
+
+    int target_Speed;
 };
 
 #endif
