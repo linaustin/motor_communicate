@@ -48,60 +48,60 @@ int motor_Rpm_Y_Bias[4] = {0, 100, 200, 200};
 int motor_Rpm_Rotation = 1500;
 
 float wheel_1_x_pid[3][3] = {
-    {},
-    {},
-    {}
+    {3, 0.001, 0.001},
+    {2.25, 0.001, 0.001},
+    {2.25, 0.001, 0.001}
 };
 
 float wheel_1_y_pid[3][3] = {
-    {},
-    {},
-    {}
+    {3.3, 0.001, 0.001},
+    {6.7, 0.001, 0.001},
+    {6.7, 0.001, 0.001}
 };
 
-float wheel_1_rotation_pid[3] = {};
+float wheel_1_rotation_pid[3] = {0.2, 0.001, 0.001};
 
 float wheel_2_x_pid[3][3] = {
-    {},
-    {},
-    {}
+    {3, 0.001, 0.001},
+    {2.25, 0.001, 0.001},
+    {2.25, 0.001, 0.001}
 };
 
 float wheel_2_y_pid[3][3] = {
-    {},
-    {},
+    {1.8, 0.001, 0.001},
+    {3.2, 0.001, 0.001},
     {}
 };
 
-float wheel_2_rotation_pid[3] = {};
+float wheel_2_rotation_pid[3] = {0.2, 0.001, 0.001};
 
 float wheel_3_x_pid[3][3] = {
-    {},
-    {},
-    {}
+    {1.5, 0.001, 0.001},
+    {1.125, 0.001, 0.001},
+    {1.125, 0.001, 0.001}
 };
 
 float wheel_3_y_pid[3][3] = {
-    {},
-    {},
-    {}
+    {2.46, 0.001, 0.001},
+    {2.46, 0.001, 0.001},
+    {2.46, 0.001, 0.001}
 };
 
-float wheel_3_rotation_pid[3] = {};
+float wheel_3_rotation_pid[3] = {0.2, 0.001, 0.001};
 
 float wheel_4_x_pid[3][3] = {
-    {},
-    {},
-    {}
+    {4.5, 0.001, 0.001},
+    {3.375, 0.001, 0.001},
+    {3.375, 0.001, 0.001}
 };
 
 float wheel_4_y_pid[3][3] = {
-    {},
-    {},
-    {}
+    {1.6, 0.001, 0.001},
+    {1.6, 0.001, 0.001},
+    {1.6, 0.001, 0.001}
 };
 
-float wheel_4_rotation_pid[3] = {};
+float wheel_4_rotation_pid[3] = {0.2, 0.001, 0.001};
 
 //object declare
 
@@ -185,7 +185,7 @@ int main(int argc, char **argv){
     output_file_path.append(std::to_string(start_struct->tm_sec));
     output_file_path.append("_motor_log.txt");
 
-    robot::wheelFL.output_file.open(output_file_path, std::ios::out | std::ios::app);
+    wheel::output_file.open(output_file_path, std::ios::out | std::ios::app);
 
     std::chrono::system_clock::duration duration_time;
 
@@ -202,12 +202,12 @@ int main(int argc, char **argv){
 
         duration_time = now_stamp - start_stamp;
 
-        robot::wheelFL.output_file << ((float)std::chrono::duration_cast<std::chrono::milliseconds>(duration_time).count())/1000 << " // ";
+        wheel::output_file << ((float)std::chrono::duration_cast<std::chrono::milliseconds>(duration_time).count())/1000 << " // ";
         robot::wheelFL.outputlog();
         robot::wheelFR.outputlog();
         robot::wheelRL.outputlog();
         robot::wheelRR.outputlog();
-        robot::wheelFL.output_file << std::endl;
+        wheel::output_file << std::endl;
 
         ros::spinOnce();
     }
