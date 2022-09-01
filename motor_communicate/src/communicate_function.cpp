@@ -1,5 +1,7 @@
 #include "motor_communicate/communicate_function.h"
 
+std::fstream wheel::output_file;
+
 wheel::wheel(uint8_t address){
 
     //set address
@@ -40,7 +42,30 @@ void wheel::settingRpmRotation(int speed)
     return;
 }
 
-void wheel::set_X_Speed(int speed, int bias, ros::Publisher &pub){
+void wheel::settingXPID(float **data, int length){
+
+    this->x_Pid_data = data;
+    this->x_Pid_data_Length = length;
+
+    return;
+}
+
+void wheel::settingYPID(float **data, int length){
+
+    this->y_Pid_data = data;
+    this->y_Pid_data_Length = length;
+
+    return;
+}
+
+void wheel::settingRotationPID(float *data){
+
+    this->rotation_Pid_data = data;
+
+    return;
+}
+
+void wheel::set_X_Speed(int speed, int bias){
 
     if(this->controller_Address == 0){
         return;
@@ -77,14 +102,12 @@ void wheel::set_X_Speed(int speed, int bias, ros::Publisher &pub){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
-    std_msgs::Int32 wheel_Target;
-    wheel_Target.data = speedValue;
-    pub.publish(wheel_Target);
+    this->target_speed = speedValue;
 
     return;
 };
 
-void wheel::set_Y_Speed(int speed, int bias, ros::Publisher &pub){
+void wheel::set_Y_Speed(int speed, int bias){
 
     if(this->controller_Address == 0){
         return;
@@ -121,14 +144,12 @@ void wheel::set_Y_Speed(int speed, int bias, ros::Publisher &pub){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
-    std_msgs::Int32 wheel_Target;
-    wheel_Target.data = speedValue;
-    pub.publish(wheel_Target);
+    this->target_speed = speedValue;
 
     return;
 };
 
-void wheel::setRoatation(int direction, ros::Publisher &pub){
+void wheel::setRoatation(int direction){
 
     if(this->controller_Address == 0){
         return;
@@ -157,14 +178,261 @@ void wheel::setRoatation(int direction, ros::Publisher &pub){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
-    std_msgs::Int32 wheel_Target;
-    wheel_Target.data = speedValue;
-    pub.publish(wheel_Target);
+    this->target_speed = speedValue;
 
     return;
 }
 
-void wheel::stop(ros::Publisher &pub){
+void wheel::setPID(int direction, int speed){
+
+    uint32_t *ptr;
+
+    if(direction == 0){
+        //rotation p
+        ptr = (unsigned int *)&this->rotation_Pid_data[0];
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc0;
+        msg.data[4] = (0xff & (*ptr >> 24));
+        msg.data[5] = (0xff & (*ptr >> 16));
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc1;
+        msg.data[4] = (0xff & (*ptr >> 8));
+        msg.data[5] = (0xff & *ptr);
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+        //rotation i
+        ptr = (unsigned int *)&this->rotation_Pid_data[1];
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc2;
+        msg.data[4] = (0xff & (*ptr >> 24));
+        msg.data[5] = (0xff & (*ptr >> 16));
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc3;
+        msg.data[4] = (0xff & (*ptr >> 8));
+        msg.data[5] = (0xff & *ptr);
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+        //rotation d
+        ptr = (unsigned int *)&this->rotation_Pid_data[2];
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc4;
+        msg.data[4] = (0xff & (*ptr >> 24));
+        msg.data[5] = (0xff & (*ptr >> 16));
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc5;
+        msg.data[4] = (0xff & (*ptr >> 8));
+        msg.data[5] = (0xff & *ptr);
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);        
+    }
+    else if(direction == 1){
+        //x-axis p
+        ptr = (unsigned int *)&this->x_Pid_data[speed - 1][0];
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc0;
+        msg.data[4] = (0xff & (*ptr >> 24));
+        msg.data[5] = (0xff & (*ptr >> 16));
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc1;
+        msg.data[4] = (0xff & (*ptr >> 8));
+        msg.data[5] = (0xff & *ptr);
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+        //x-axis i
+        ptr = (unsigned int *)&this->x_Pid_data[speed - 1][1];
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc2;
+        msg.data[4] = (0xff & (*ptr >> 24));
+        msg.data[5] = (0xff & (*ptr >> 16));
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc3;
+        msg.data[4] = (0xff & (*ptr >> 8));
+        msg.data[5] = (0xff & *ptr);
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+        //x-axis d
+        ptr = (unsigned int *)&this->x_Pid_data[speed - 1][2];
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc4;
+        msg.data[4] = (0xff & (*ptr >> 24));
+        msg.data[5] = (0xff & (*ptr >> 16));
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc5;
+        msg.data[4] = (0xff & (*ptr >> 8));
+        msg.data[5] = (0xff & *ptr);
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);      
+    }
+    else if(direction == 2){
+        //y-axis p
+        ptr = (unsigned int *)&this->y_Pid_data[speed - 1][0];
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc0;
+        msg.data[4] = (0xff & (*ptr >> 24));
+        msg.data[5] = (0xff & (*ptr >> 16));
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc1;
+        msg.data[4] = (0xff & (*ptr >> 8));
+        msg.data[5] = (0xff & *ptr);
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+        //x-axis i
+        ptr = (unsigned int *)&this->y_Pid_data[speed - 1][1];
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc2;
+        msg.data[4] = (0xff & (*ptr >> 24));
+        msg.data[5] = (0xff & (*ptr >> 16));
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc3;
+        msg.data[4] = (0xff & (*ptr >> 8));
+        msg.data[5] = (0xff & *ptr);
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+        //x-axis d
+        ptr = (unsigned int *)&this->y_Pid_data[speed - 1][2];
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc4;
+        msg.data[4] = (0xff & (*ptr >> 24));
+        msg.data[5] = (0xff & (*ptr >> 16));
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);
+
+        clearMsg();
+        msg.length = 8;
+        msg.data[0] = this->controller_Address;
+        msg.data[1] = 0x06;
+        msg.data[2] = 0x00;
+        msg.data[3] = 0xc5;
+        msg.data[4] = (0xff & (*ptr >> 8));
+        msg.data[5] = (0xff & *ptr);
+        CRC16Generate(&msg);
+        transmitData(&msg);
+        receiveData(&msg);      
+    }
+
+
+    return;
+}
+
+void wheel::stop(){
 
     if(this->controller_Address == 0){
         return;
@@ -182,14 +450,12 @@ void wheel::stop(ros::Publisher &pub){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
-    std_msgs::Int32 wheel_Target;
-    wheel_Target.data = 0;
-    pub.publish(wheel_Target);
+    this->target_speed = 0;
 
     return;
 }
 
-void wheel::freeStop(ros::Publisher &pub){
+void wheel::freeStop(){
 
     if(this->controller_Address == 0){
         return;
@@ -207,15 +473,13 @@ void wheel::freeStop(ros::Publisher &pub){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
-    std_msgs::Int32 wheel_Target;
-    wheel_Target.data = 0;
-    pub.publish(wheel_Target);
+    this->target_speed = 0;
 
     return;
 }
 
-void wheel::getRpm(ros::Publisher &pub){
-
+void wheel::getRpm(){
+     
     clearMsg();
     this->msg.length = 8;
     this->msg.data[0] = this->controller_Address;
@@ -241,16 +505,28 @@ void wheel::getRpm(ros::Publisher &pub){
             rpm = rpm * 10;
         }
 
-        std_msgs::Int32 wheel_rpm;
+        if(this->target_speed < 0){
+            rpm = -1*rpm;
+        }
 
-        wheel_rpm.data = rpm;
-        pub.publish(wheel_rpm);
+        this->current_rpm = rpm;
+
     }
     else{
         ROS_INFO("wheel_%d reading rpm error\n", this->controller_Address);
     }
 
     return;
+}
+
+void wheel::outputlog(){
+    if(output_file.is_open()){
+        output_file << "wheel: " << this->controller_Address << " " << "target: " << this->target_speed << " " << "rpm: " << this->current_rpm << " ";
+    }
+    else{
+        std::cout << "file is not open when write wheel " << this->controller_Address << std::endl;
+    }
+
 }
 
 void wheel::clearMsg(){

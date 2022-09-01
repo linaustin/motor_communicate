@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <fstream>
 #include <ros/ros.h>
-#include <std_msgs/Int32.h>
 
 extern "C"{
     #include "motor_communicate/motor_function.h"
@@ -18,14 +18,23 @@ class wheel{
     void settingRpmData(int *xdata, int xlength, int *ydata, int ylength);
     void settingRpmBias(int *xdata, int xlength, int *ydata, int ylength);
     void settingRpmRotation(int speed);
+    void settingXPID(float **data, int length);
+    void settingYPID(float **data, int length);
+    void settingRotationPID(float *data);
 
-    void set_X_Speed(int speed, int bias, ros::Publisher &pub);
-    void set_Y_Speed(int speed, int bias, ros::Publisher &pub);
-    void setRoatation(int direction, ros::Publisher &pub);
-    void stop(ros::Publisher &pub);
-    void freeStop(ros::Publisher &pub);
+    void set_X_Speed(int speed, int bias);
+    void set_Y_Speed(int speed, int bias);
+    void setRoatation(int direction);
+    void setPID(int direction, int speed);
 
-    void getRpm(ros::Publisher &pub);
+    void stop();
+    void freeStop();
+
+    void getRpm();
+
+    void outputlog();
+
+    static std::fstream output_file;
 
     private:
 
@@ -34,6 +43,9 @@ class wheel{
     serialData msg;
 
     uint8_t controller_Address;
+
+    int target_speed;
+    int current_rpm;
 
     int *rpm_X_Data;
     int rpm_X_Data_Length;
@@ -48,6 +60,14 @@ class wheel{
     int rpm_Y_Bias_Length;
 
     int rpm_Rotation;
+
+    float **x_Pid_data;
+    int x_Pid_data_Length;
+
+    float **y_Pid_data;
+    int y_Pid_data_Length;
+
+    float *rotation_Pid_data;
 };
 
 #endif
