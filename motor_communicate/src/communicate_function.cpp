@@ -42,18 +42,24 @@ void wheel::settingRpmRotation(int speed)
     return;
 }
 
-void wheel::settingXPID(float **data, int length){
+void wheel::settingXPID(float data[][3], int length){
 
-    this->x_Pid_data = data;
-    this->x_Pid_data_Length = length;
+    this->x_Pid_data = new float*[length];
+
+    for(int i = 0; i < length; i++){
+        x_Pid_data[i] = data[i];
+    }
 
     return;
 }
 
-void wheel::settingYPID(float **data, int length){
+void wheel::settingYPID(float data[][3], int length){
 
-    this->y_Pid_data = data;
-    this->y_Pid_data_Length = length;
+    this->y_Pid_data = new float*[length];
+
+    for(int i = 0; i < length; i++){
+        this->y_Pid_data[i] = data[i];
+    }
 
     return;
 }
@@ -521,7 +527,7 @@ void wheel::getRpm(){
 
 void wheel::outputlog(){
     if(output_file.is_open()){
-        output_file << "wheel: " << this->controller_Address << " " << "target: " << this->target_speed << " " << "rpm: " << this->current_rpm << " ";
+        output_file << "wheel: " << (int)this->controller_Address << " " << "target: " << this->target_speed << " " << "rpm: " << this->current_rpm << " ";
     }
     else{
         std::cout << "file is not open when write wheel " << this->controller_Address << std::endl;

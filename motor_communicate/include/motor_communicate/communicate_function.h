@@ -18,8 +18,8 @@ class wheel{
     void settingRpmData(int *xdata, int xlength, int *ydata, int ylength);
     void settingRpmBias(int *xdata, int xlength, int *ydata, int ylength);
     void settingRpmRotation(int speed);
-    void settingXPID(float **data, int length);
-    void settingYPID(float **data, int length);
+    void settingXPID(float data[][3], int length);
+    void settingYPID(float data[][3], int length);
     void settingRotationPID(float *data);
 
     void set_X_Speed(int speed, int bias);
