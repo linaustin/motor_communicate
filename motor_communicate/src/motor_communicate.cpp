@@ -1,16 +1,10 @@
 #include <ros/ros.h>
 #include <nav/Service_msg.h>
-#include <std_msgs/Int32.h>
 #include <motor_communicate/communicate_function.h>
-
 #include <iostream>
-#include <string>
-#include <fstream>
-#include <iomanip>
 #include <ctime>
 #include <chrono>
-#include <unistd.h>
-#include <pwd.h>
+#include <motor_communicate/motor_info.h>
 
 namespace robot{
 
@@ -70,7 +64,7 @@ float wheel_2_x_pid_load[3][3] = {
 float wheel_2_y_pid_load[3][3] = {
     {1.8, 0.001, 0.001},
     {3.2, 0.001, 0.001},
-    {}
+    {3.2, 0.001, 0.001}
 };
 
 float wheel_2_rotation_pid[3] = {0.2, 0.001, 0.001};
@@ -111,6 +105,13 @@ wheel wheelFR(2);
 wheel wheelRL(3);
 wheel wheelRR(4);
 }
+
+motor_communicate::motor_info publish_data;
+std::chrono::system_clock::time_point start_stamp;
+std::chrono::system_clock::time_point now_stamp;
+std::chrono::system_clock::duration duration_time;
+
+ros::Publisher log_publisher;
 
 int main(int argc, char **argv){
 
@@ -153,64 +154,12 @@ int main(int argc, char **argv){
     robot::wheelRR.settingYPID(robot::wheel_4_y_pid_load, sizeof(robot::wheel_4_y_pid_load)/sizeof(robot::wheel_4_y_pid_load[0]));
     robot::wheelRR.settingRotationPID(robot::wheel_4_rotation_pid_load);
 
-    std::string output_file_path;
+    start_stamp = std::chrono::system_clock::now();
 
-    uid_t userid;
-    struct passwd *pwd;
-
-    tm *start_struct;
-    time_t start;
-
-    std::chrono::system_clock::time_point start_stamp = std::chrono::system_clock::now();
-    std::chrono::system_clock::time_point now_stamp;
-
-    userid = getuid();
-    pwd = getpwuid(userid);
-
-    output_file_path.append(pwd->pw_dir);
-    output_file_path.append("/Desktop/motor_log");
-
-    start = std::chrono::system_clock::to_time_t(start_stamp);
-    start_struct = std::localtime(&start);
-    output_file_path.append(std::to_string(1900 +  start_struct->tm_year));
-    output_file_path.append("_");
-    output_file_path.append(std::to_string(start_struct->tm_mon + 1));
-    output_file_path.append("_");
-    output_file_path.append(std::to_string(start_struct->tm_mday));
-    output_file_path.append("_");
-    output_file_path.append(std::to_string(start_struct->tm_hour));
-    output_file_path.append(":");
-    output_file_path.append(std::to_string(start_struct->tm_min));
-    output_file_path.append(":");
-    output_file_path.append(std::to_string(start_struct->tm_sec));
-    output_file_path.append("_motor_log.txt");
-
-    wheel::output_file.open(output_file_path, std::ios::out | std::ios::app);
-
-    std::chrono::system_clock::duration duration_time;
-
+    log_publisher = rosNh.advertise<motor_communicate::motor_info>("/motor_log", 1000);
     ros::ServiceServer motor_service = rosNh.advertiseService("controller_command", robot::navCallback);
 
-    while(ros::ok()){
-
-        robot::wheelFL.getRpm();
-        robot::wheelFR.getRpm();
-        robot::wheelRL.getRpm();
-        robot::wheelRR.getRpm();
-
-        now_stamp = std::chrono::system_clock::now();
-
-        duration_time = now_stamp - start_stamp;
-
-        wheel::output_file << ((float)std::chrono::duration_cast<std::chrono::milliseconds>(duration_time).count())/1000 << " // ";
-        robot::wheelFL.outputlog();
-        robot::wheelFR.outputlog();
-        robot::wheelRL.outputlog();
-        robot::wheelRR.outputlog();
-        wheel::output_file << std::endl;
-
-        ros::spinOnce();
-    }
+    ros::spin();
 
     robot::stop();
     robot::freeStop();
@@ -266,6 +215,26 @@ bool robot::navCallback(nav::Service_msg::Request &request, nav::Service_msg::Re
     else if(robot::nav_Command.type == 2){
         robot::robotMove_Yaxis(robot::nav_Command.velocity, robot::nav_Command.bias);
     }
+
+        robot::wheelFL.getRpm();
+        robot::wheelFR.getRpm();
+        robot::wheelRL.getRpm();
+        robot::wheelRR.getRpm();
+
+        publish_data.wheel_1_rpm = robot::wheelFL.output_rpm();
+        publish_data.wheel_1_target = robot::wheelFL.output_target();
+        publish_data.wheel_2_rpm = robot::wheelFR.output_rpm();
+        publish_data.wheel_2_target = robot::wheelFR.output_target();
+        publish_data.wheel_3_rpm = robot::wheelRL.output_rpm();
+        publish_data.wheel_3_target = robot::wheelRL.output_target();
+        publish_data.wheel_4_rpm = robot::wheelRR.output_rpm();
+        publish_data.wheel_4_target = robot::wheelRR.output_target();
+
+        now_stamp = std::chrono::system_clock::now();
+        duration_time = now_stamp - start_stamp;
+        publish_data.duration = ((float)std::chrono::duration_cast<std::chrono::milliseconds>(duration_time).count());
+
+        log_publisher.publish(publish_data);
 
     return true;
 }

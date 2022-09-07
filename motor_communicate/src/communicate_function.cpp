@@ -525,14 +525,14 @@ void wheel::getRpm(){
     return;
 }
 
-void wheel::outputlog(){
-    if(output_file.is_open()){
-        output_file << "wheel: " << (int)this->controller_Address << " " << "target: " << this->target_speed << " " << "rpm: " << this->current_rpm << " ";
-    }
-    else{
-        std::cout << "file is not open when write wheel " << this->controller_Address << std::endl;
-    }
+int wheel::output_rpm(){
 
+    return this->current_rpm;
+}
+
+int wheel::output_target(){
+
+    return this->target_speed;
 }
 
 void wheel::clearMsg(){

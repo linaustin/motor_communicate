@@ -32,7 +32,8 @@ class wheel{
 
     void getRpm();
 
-    void outputlog();
+    int output_rpm();
+    int output_target();
 
     static std::fstream output_file;
 
