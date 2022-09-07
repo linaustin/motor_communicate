@@ -87,14 +87,33 @@ plt.ylabel("velocity(RPM)")
 plt.title("wheel4")
 plt.legend(loc = 2)
 
+
+
+for i in range(wheel1_rpm.size):
+    wheel1_rpm[i] = abs(wheel1_rpm[i])
+
+for i in range(wheel2_rpm.size):
+    wheel2_rpm[i] = abs(wheel2_rpm[i])
+
+for i in range(wheel3_rpm.size):
+    wheel3_rpm[i] = abs(wheel3_rpm[i])
+
+for i in range(wheel4_rpm.size):
+    wheel4_rpm[i] = abs(wheel4_rpm[i])
+
+for i in range(wheel1_target.size):
+    wheel1_target[i] = abs (wheel1_target[i])
+
 plt.subplot(3,2,5)
-plt.plot(time, wheel1_rpm, "or-", label = "rpm", ms = 5)
-plt.plot(time, wheel2_rpm, "og-", label = "rpm", ms = 5)
-plt.plot(time, wheel3_rpm, "om-", label = "rpm", ms = 5)
-plt.plot(time, wheel4_rpm, "oc-", label = "rpm", ms = 5)
+plt.plot(time, wheel1_target, "ok-", label = "target")
+plt.plot(time, wheel1_rpm, "or-", label = "wheel_1_rpm", ms = 5)
+plt.plot(time, wheel2_rpm, "og-", label = "wheel_2_rpm", ms = 5)
+plt.plot(time, wheel3_rpm, "om-", label = "wheel_3_rpm", ms = 5)
+plt.plot(time, wheel4_rpm, "oc-", label = "wheel_4_rpm", ms = 5)
 plt.xlabel("time(sec)")
 plt.ylabel("velocity(RPM)")
 plt.title("wheel compare")
+plt.legend(loc = 2)
 
 plt.subplots_adjust(wspace = 0.5, hspace = 0.5)
 plt.show()
