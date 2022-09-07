@@ -159,7 +159,30 @@ int main(int argc, char **argv){
     log_publisher = rosNh.advertise<motor_communicate::motor_info>("/motor_log", 1000);
     ros::ServiceServer motor_service = rosNh.advertiseService("controller_command", robot::navCallback);
 
-    ros::spin();
+    while(ros::ok()){
+        robot::wheelFL.getRpm();
+        robot::wheelFR.getRpm();
+        robot::wheelRL.getRpm();
+        robot::wheelRR.getRpm();
+
+        publish_data.wheel_1_rpm = robot::wheelFL.output_rpm();
+        publish_data.wheel_1_target = robot::wheelFL.output_target();
+        publish_data.wheel_2_rpm = robot::wheelFR.output_rpm();
+        publish_data.wheel_2_target = robot::wheelFR.output_target();
+        publish_data.wheel_3_rpm = robot::wheelRL.output_rpm();
+        publish_data.wheel_3_target = robot::wheelRL.output_target();
+        publish_data.wheel_4_rpm = robot::wheelRR.output_rpm();
+        publish_data.wheel_4_target = robot::wheelRR.output_target();
+
+        now_stamp = std::chrono::system_clock::now();
+        duration_time = now_stamp - start_stamp;
+        publish_data.duration = (((float)std::chrono::duration_cast<std::chrono::milliseconds>(duration_time).count())/1000);
+
+        log_publisher.publish(publish_data);
+        std::cout << "publish once " << std::endl;
+
+        ros::spinOnce();
+    }
 
     robot::stop();
     robot::freeStop();
@@ -215,7 +238,7 @@ bool robot::navCallback(nav::Service_msg::Request &request, nav::Service_msg::Re
     else if(robot::nav_Command.type == 2){
         robot::robotMove_Yaxis(robot::nav_Command.velocity, robot::nav_Command.bias);
     }
-
+    /*
         robot::wheelFL.getRpm();
         robot::wheelFR.getRpm();
         robot::wheelRL.getRpm();
@@ -232,9 +255,12 @@ bool robot::navCallback(nav::Service_msg::Request &request, nav::Service_msg::Re
 
         now_stamp = std::chrono::system_clock::now();
         duration_time = now_stamp - start_stamp;
-        publish_data.duration = ((float)std::chrono::duration_cast<std::chrono::milliseconds>(duration_time).count());
+        publish_data.duration = ((float)std::chrono::duration_cast<std::chrono::milliseconds>(duration_time).count())/1000;
 
         log_publisher.publish(publish_data);
+    */
+
+    ros::Duration(0.05).sleep();
 
     return true;
 }

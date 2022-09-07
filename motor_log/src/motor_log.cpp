@@ -31,7 +31,7 @@ int main(int argc, char **argv){
     userid = getuid();
     pwd = getpwuid(userid);
     output_file_path.append(pwd->pw_dir);
-    output_file_path.append("/Desktop/motor_log");
+    output_file_path.append("/Desktop/motor_log/");
     output_file_path.append(std::to_string(1900 +  start_struct->tm_year));
     output_file_path.append("_");
     output_file_path.append(std::to_string(start_struct->tm_mon + 1));
@@ -39,9 +39,9 @@ int main(int argc, char **argv){
     output_file_path.append(std::to_string(start_struct->tm_mday));
     output_file_path.append("_");
     output_file_path.append(std::to_string(start_struct->tm_hour));
-    output_file_path.append(":");
+    output_file_path.append("_");
     output_file_path.append(std::to_string(start_struct->tm_min));
-    output_file_path.append(":");
+    output_file_path.append("_");
     output_file_path.append(std::to_string(start_struct->tm_sec));
     output_file_path.append("_motor_log.txt");
 
@@ -50,6 +50,8 @@ int main(int argc, char **argv){
     ros::Subscriber sub = rosNh.subscribe("/motor_log", 1000, log_callback);
 
     ros::spin();
+
+    output_file.close();
 
     return  0;
 }

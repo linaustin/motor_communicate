@@ -7,6 +7,9 @@ wheel::wheel(uint8_t address){
     //set address
     this->controller_Address = address;
 
+    this->target_speed = 0;
+    this->last_target_speed = 0;
+
     // init serialData
     clearMsg();
 
@@ -108,6 +111,8 @@ void wheel::set_X_Speed(int speed, int bias){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
+
+    this->last_target_speed = this->target_speed;
     this->target_speed = speedValue;
 
     return;
@@ -150,6 +155,7 @@ void wheel::set_Y_Speed(int speed, int bias){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
+    this->last_target_speed = this->target_speed;
     this->target_speed = speedValue;
 
     return;
@@ -184,6 +190,7 @@ void wheel::setRoatation(int direction){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
+    this->last_target_speed = this->target_speed;
     this->target_speed = speedValue;
 
     return;
@@ -456,6 +463,7 @@ void wheel::stop(){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
+    this->last_target_speed = this->target_speed;
     this->target_speed = 0;
 
     return;
@@ -479,6 +487,7 @@ void wheel::freeStop(){
     transmitData(&this->msg);
     receiveData(&this->msg);
 
+    this->last_target_speed = this->target_speed;
     this->target_speed = 0;
 
     return;
@@ -512,6 +521,9 @@ void wheel::getRpm(){
         }
 
         if(this->target_speed < 0){
+            rpm = -1*rpm;
+        }
+        if(this->target_speed == 0 && this->last_target_speed < 0){
             rpm = -1*rpm;
         }
 

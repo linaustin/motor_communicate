@@ -46,6 +46,7 @@ class wheel{
     uint8_t controller_Address;
 
     int target_speed;
+    int last_target_speed;
     int current_rpm;
 
     int *rpm_X_Data;

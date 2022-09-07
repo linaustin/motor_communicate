@@ -69,10 +69,10 @@ int main(int argc, char **argv){
 }
 
 void readRegister(){
-    uint16_t input = 0;
+    int input = 0;
 
     clearMsg(&msg);
-
+    msg.length = 8;
     std::cout << "enter controller address: (dec)" << std::endl;
     std::cin >> std::dec >> input;
     std::cin.get();
@@ -87,7 +87,6 @@ void readRegister(){
     msg.data[3] = (0xff & input);
     msg.data[2] = (0xff & (input >> 8));
     std::cout << std::endl;
-    
     std::cout << "enter numbers of registers: (dec)" << std::endl;
     std::cin >> std::dec >> input;
     std::cin.get();
@@ -99,10 +98,10 @@ void readRegister(){
 }
 
 void writeRegister(){
-    uint16_t input;
+    int input;
 
     clearMsg(&msg);
-    
+    msg.length = 8;
     std::cout << "enter target address: (dec)" << std::endl;
     std::cin >> std::dec >> input;
     std::cin.get();
@@ -258,11 +257,16 @@ void settingController(uint8_t address){
 }
 
 void settingPID(uint8_t address, char type){
-    float input;
+    float floatinput;
+    unsigned int *input_ptr;
+    unsigned int  input;
 
     std::cout << "enter data: p(0.001~1) i(0.001~1) d(0.001~1) (dec)" << std::endl;
-    std::cin >> std::dec >> input;
+    std::cin >> std::dec >> floatinput;
     std::cin.get();
+
+    input_ptr = (unsigned int *)&floatinput;
+    input = *input_ptr;
 
     if(type == 'p'){
         clearMsg(&msg);
@@ -271,8 +275,8 @@ void settingPID(uint8_t address, char type){
         msg.data[1] = 0x06;
         msg.data[2] = 0x00;
         msg.data[3] = 0xc0;
-        msg.data[4] = (0xff & ((uint32_t)input >> 24));
-        msg.data[5] = (0xff & ((uint32_t)input >> 16));
+        msg.data[4] = (0xff & (input >> 24));
+        msg.data[5] = (0xff & (input >> 16));
         CRC16Generate(&msg);
         transmitData(&msg);
         receiveData(&msg);
@@ -283,8 +287,8 @@ void settingPID(uint8_t address, char type){
         msg.data[1] = 0x06;
         msg.data[2] = 0x00;
         msg.data[3] = 0xc1;
-        msg.data[4] = (0xff & ((uint32_t)input >> 8));
-        msg.data[5] = (0xff & (uint32_t)input);
+        msg.data[4] = (0xff & (input >> 8));
+        msg.data[5] = (0xff & input);
         CRC16Generate(&msg);
         transmitData(&msg);
         receiveData(&msg);
@@ -296,8 +300,8 @@ void settingPID(uint8_t address, char type){
         msg.data[1] = 0x06;
         msg.data[2] = 0x00;
         msg.data[3] = 0xc2;
-        msg.data[4] = (0xff & ((uint32_t)input >> 24));
-        msg.data[5] = (0xff & ((uint32_t)input >> 16));
+        msg.data[4] = (0xff & (input >> 24));
+        msg.data[5] = (0xff & (input >> 16));
         CRC16Generate(&msg);
         transmitData(&msg);
         receiveData(&msg);
@@ -308,8 +312,8 @@ void settingPID(uint8_t address, char type){
         msg.data[1] = 0x06;
         msg.data[2] = 0x00;
         msg.data[3] = 0xc3;
-        msg.data[4] = (0xff & ((uint32_t)input >> 8));
-        msg.data[5] = (0xff & (uint32_t)input);
+        msg.data[4] = (0xff & (input >> 8));
+        msg.data[5] = (0xff & input);
         CRC16Generate(&msg);
         transmitData(&msg);
         receiveData(&msg);
@@ -321,8 +325,8 @@ void settingPID(uint8_t address, char type){
         msg.data[1] = 0x06;
         msg.data[2] = 0x00;
         msg.data[3] = 0xc4;
-        msg.data[4] = (0xff & ((uint32_t)input >> 24));
-        msg.data[5] = (0xff & ((uint32_t)input >> 16));
+        msg.data[4] = (0xff & (input >> 24));
+        msg.data[5] = (0xff & (input >> 16));
         CRC16Generate(&msg);
         transmitData(&msg);
         receiveData(&msg);
@@ -333,8 +337,8 @@ void settingPID(uint8_t address, char type){
         msg.data[1] = 0x06;
         msg.data[2] = 0x00;
         msg.data[3] = 0xc5;
-        msg.data[4] = (0xff & ((uint32_t)input >> 8));
-        msg.data[5] = (0xff & (uint32_t)input);
+        msg.data[4] = (0xff & (input >> 8));
+        msg.data[5] = (0xff & input);
         CRC16Generate(&msg);
         transmitData(&msg);
         receiveData(&msg);
