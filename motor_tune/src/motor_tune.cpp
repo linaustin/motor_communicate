@@ -26,7 +26,7 @@ int main(int argc, char **argv){
         msg.request.direction = dir;
         msg.request.velocity = vel;
         msg.request.rotation = rot;
-        msg.request.rotation = head;
+        msg.request.head_direction = head;
 
         float duration;
 
@@ -36,7 +36,21 @@ int main(int argc, char **argv){
         client.call(msg);
         ROS_INFO("call service!");
 
-        ros::Duration(duration).sleep();
+        double pass = 0;
+
+        ros::Time start = ros::Time::now();
+
+        while (pass <= duration)
+        {
+            ros::Time now = ros::Time::now();
+
+            ros::Duration passTime = now - start;
+            pass = passTime.toSec();
+
+            client.call(msg);
+        }
+        
+
 
         msg.request.direction = 0;
         msg.request.velocity = 0;

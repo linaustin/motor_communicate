@@ -108,8 +108,6 @@ wheel wheelRR(4);
 
 motor_communicate::motor_info publish_data;
 std::chrono::system_clock::time_point start_stamp;
-std::chrono::system_clock::time_point now_stamp;
-std::chrono::system_clock::duration duration_time;
 
 ros::Publisher log_publisher;
 
@@ -174,9 +172,7 @@ int main(int argc, char **argv){
         publish_data.wheel_4_rpm = robot::wheelRR.output_rpm();
         publish_data.wheel_4_target = robot::wheelRR.output_target();
 
-        now_stamp = std::chrono::system_clock::now();
-        duration_time = now_stamp - start_stamp;
-        publish_data.duration = (((float)std::chrono::duration_cast<std::chrono::milliseconds>(duration_time).count())/1000);
+        publish_data.head.stamp = ros::Time::now();
 
         log_publisher.publish(publish_data);
         std::cout << "publish once " << std::endl;
@@ -253,10 +249,8 @@ bool robot::navCallback(nav::Service_msg::Request &request, nav::Service_msg::Re
         publish_data.wheel_4_rpm = robot::wheelRR.output_rpm();
         publish_data.wheel_4_target = robot::wheelRR.output_target();
 
-        now_stamp = std::chrono::system_clock::now();
-        duration_time = now_stamp - start_stamp;
-        publish_data.duration = ((float)std::chrono::duration_cast<std::chrono::milliseconds>(duration_time).count())/1000;
-
+        publish_data.head.stamp = ros::Time::now();
+        
         log_publisher.publish(publish_data);
     */
 

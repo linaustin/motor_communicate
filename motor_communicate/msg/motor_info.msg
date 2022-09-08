@@ -1,4 +1,4 @@
-float32 duration
+std_msgs/Header head
 
 int32 wheel_1_target
 int32 wheel_2_target
