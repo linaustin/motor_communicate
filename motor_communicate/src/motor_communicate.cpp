@@ -169,7 +169,6 @@ wheel wheelRR(4);
 }
 
 motor_communicate::motor_info publish_data;
-std::chrono::system_clock::time_point start_stamp;
 
 ros::Publisher log_publisher;
 
@@ -214,12 +213,9 @@ int main(int argc, char **argv){
     robot::wheelRR.settingYPID(robot::wheel_4_y_pid_load, sizeof(robot::wheel_4_y_pid_load)/sizeof(robot::wheel_4_y_pid_load[0]), robot::wheel_4_y_pid_unload, sizeof(robot::wheel_4_y_pid_unload)/sizeof(robot::wheel_4_y_pid_unload[0]));
     robot::wheelRR.settingRotationPID(robot::wheel_4_rotation_pid_load, robot::wheel_4_rotation_pid_unload);
 
-    start_stamp = std::chrono::system_clock::now();
-
     log_publisher = rosNh.advertise<motor_communicate::motor_info>("/motor_log", 1000);
     ros::ServiceServer motor_service = rosNh.advertiseService("controller_command", robot::navCallback);
 
-    /*
     while(ros::ok()){
         robot::wheelFL.getRpm();
         robot::wheelFR.getRpm();
@@ -242,8 +238,6 @@ int main(int argc, char **argv){
 
         ros::spinOnce();
     }
-    */
-    ros::spin();
 
     robot::stop();
     robot::freeStop();
@@ -301,8 +295,8 @@ bool robot::navCallback(nav::Service_msg::Request &request, nav::Service_msg::Re
         robot::robotMove_Yaxis(robot::nav_Command.velocity, robot::nav_Command.bias);
     }
         
-    ros::Duration(0.05).sleep();
-
+    ros::Duration(0.1).sleep();
+/*
     robot::wheelFL.getRpm();
     robot::wheelFR.getRpm();
     robot::wheelRL.getRpm();
@@ -321,7 +315,7 @@ bool robot::navCallback(nav::Service_msg::Request &request, nav::Service_msg::Re
 
     log_publisher.publish(publish_data);
     std::cout << "publish once " << std::endl;
-
+*/
     return true;
 }
 

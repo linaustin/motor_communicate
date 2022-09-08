@@ -63,6 +63,7 @@ void log_callback(const motor_communicate::motor_info::ConstPtr &data){
 
     ros::Duration duration = data->head.stamp - start_point;
 
+    std::cout << duration.toSec() << std::endl;
     output_file << duration.toSec() << " // ";
     output_file << "wheel: 1 " << "target: " << data->wheel_1_target << " " << "rpm: " << data->wheel_1_rpm << " ";
     output_file << "wheel: 2 " << "target: " << data->wheel_2_target << " " << "rpm: " << data->wheel_2_rpm << " ";
