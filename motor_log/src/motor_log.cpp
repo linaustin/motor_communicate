@@ -50,7 +50,7 @@ int main(int argc, char **argv){
 
     ros::Subscriber sub = rosNh.subscribe("/motor_log", 1000, log_callback);
 
-    ros::Time start_point = ros::Time::now();
+    start_point = ros::Time::now();
 
     ros::spin();
 
@@ -61,9 +61,9 @@ int main(int argc, char **argv){
 
 void log_callback(const motor_communicate::motor_info::ConstPtr &data){
 
-    float duration = (data->head.stamp.sec - start_point.sec) + (float)(data->head.stamp.nsec/1000000)/100;
+    ros::Duration duration = data->head.stamp - start_point;
 
-    output_file << duration << " // ";
+    output_file << duration.toSec() << " // ";
     output_file << "wheel: 1 " << "target: " << data->wheel_1_target << " " << "rpm: " << data->wheel_1_rpm << " ";
     output_file << "wheel: 2 " << "target: " << data->wheel_2_target << " " << "rpm: " << data->wheel_2_rpm << " ";
     output_file << "wheel: 3 " << "target: " << data->wheel_3_target << " " << "rpm: " << data->wheel_3_rpm << " ";

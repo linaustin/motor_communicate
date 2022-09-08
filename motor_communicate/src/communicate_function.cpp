@@ -1,7 +1,5 @@
 #include "motor_communicate/communicate_function.h"
 
-std::fstream wheel::output_file;
-
 wheel::wheel(uint8_t address){
 
     //set address
@@ -45,31 +43,45 @@ void wheel::settingRpmRotation(int speed)
     return;
 }
 
-void wheel::settingXPID(float data[][3], int length){
+void wheel::settingXPID(float data_load[][3], int length_load, float data_unload[][3], int length_unload){
 
-    this->x_Pid_data = new float*[length];
+    this->x_Pid_data_load = new float*[length_load];
 
-    for(int i = 0; i < length; i++){
-        x_Pid_data[i] = data[i];
+    for(int i = 0; i < length_load; i++){
+        x_Pid_data_load[i] = data_load[i];
+    }
+
+    this->x_Pid_data_unload = new float*[length_unload];
+
+    for(int i = 0; i < length_unload; i++){
+        x_Pid_data_unload[i] = data_unload[i];
     }
 
     return;
 }
 
-void wheel::settingYPID(float data[][3], int length){
+void wheel::settingYPID(float data_load[][3], int length_load, float data_unload[][3], int length_unload){
 
-    this->y_Pid_data = new float*[length];
+    this->y_Pid_data_load = new float*[length_load];
 
-    for(int i = 0; i < length; i++){
-        this->y_Pid_data[i] = data[i];
+    for(int i = 0; i < length_load; i++){
+        this->y_Pid_data_load[i] = data_load[i];
+    }
+
+    this->y_Pid_data_unload = new float*[length_unload];
+
+    for(int i = 0; i < length_unload; i++){
+        this->y_Pid_data_unload[i] = data_unload[i];
     }
 
     return;
 }
 
-void wheel::settingRotationPID(float *data){
+void wheel::settingRotationPID(float *data_load, float *data_unload){
 
-    this->rotation_Pid_data = data;
+    this->rotation_Pid_data_load = data_load;
+
+    this->rotation_Pid_data_unload = data_unload;
 
     return;
 }
@@ -196,252 +208,128 @@ void wheel::setRoatation(int direction){
     return;
 }
 
-void wheel::setPID(int direction, int speed){
+void wheel::setPID(int direction, int speed, bool load){
 
     uint32_t *ptr;
+    float p;
+    float i;
+    float d;
 
-    if(direction == 0){
-        //rotation p
-        ptr = (unsigned int *)&this->rotation_Pid_data[0];
-
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc0;
-        msg.data[4] = (0xff & (*ptr >> 24));
-        msg.data[5] = (0xff & (*ptr >> 16));
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
-
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc1;
-        msg.data[4] = (0xff & (*ptr >> 8));
-        msg.data[5] = (0xff & *ptr);
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
-        //rotation i
-        ptr = (unsigned int *)&this->rotation_Pid_data[1];
-
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc2;
-        msg.data[4] = (0xff & (*ptr >> 24));
-        msg.data[5] = (0xff & (*ptr >> 16));
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
-
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc3;
-        msg.data[4] = (0xff & (*ptr >> 8));
-        msg.data[5] = (0xff & *ptr);
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
-        //rotation d
-        ptr = (unsigned int *)&this->rotation_Pid_data[2];
-
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc4;
-        msg.data[4] = (0xff & (*ptr >> 24));
-        msg.data[5] = (0xff & (*ptr >> 16));
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
-
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc5;
-        msg.data[4] = (0xff & (*ptr >> 8));
-        msg.data[5] = (0xff & *ptr);
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);        
+    if(load){
+        if(direction == 0){
+            p = rotation_Pid_data_load[0];
+            i = rotation_Pid_data_load[1];
+            d = rotation_Pid_data_load[2];
+        }
+        else if(direction == 1){
+            p = x_Pid_data_load[speed - 1][0];
+            i = x_Pid_data_load[speed - 1][1];
+            d = x_Pid_data_load[speed - 1][2];
+        }
+        else if(direction == 2){
+            p = y_Pid_data_load[speed - 1][0];
+            i = y_Pid_data_load[speed - 1][1];
+            d = y_Pid_data_load[speed - 1][2];
+        }
+    }else{
+        if(direction == 0){
+            p = rotation_Pid_data_unload[0];
+            i = rotation_Pid_data_unload[1];
+            d = rotation_Pid_data_unload[2];
+        }
+        else if(direction == 1){
+            p = x_Pid_data_unload[speed - 1][0];
+            i = x_Pid_data_unload[speed - 1][1];
+            d = x_Pid_data_unload[speed - 1][2];
+        }
+        else if(direction == 2){
+            p = y_Pid_data_unload[speed - 1][0];
+            i = y_Pid_data_unload[speed - 1][1];
+            d = y_Pid_data_unload[speed - 1][2];
+        }
     }
-    else if(direction == 1){
-        //x-axis p
-        ptr = (unsigned int *)&this->x_Pid_data[speed - 1][0];
+    
+    //rotation p
+    ptr = (unsigned int *)&p;
 
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc0;
-        msg.data[4] = (0xff & (*ptr >> 24));
-        msg.data[5] = (0xff & (*ptr >> 16));
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
+    clearMsg();
+    msg.length = 8;
+    msg.data[0] = this->controller_Address;
+    msg.data[1] = 0x06;
+    msg.data[2] = 0x00;
+    msg.data[3] = 0xc0;
+    msg.data[4] = (0xff & (*ptr >> 24));
+    msg.data[5] = (0xff & (*ptr >> 16));
+    CRC16Generate(&msg);
+    transmitData(&msg);
+    receiveData(&msg);
 
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc1;
-        msg.data[4] = (0xff & (*ptr >> 8));
-        msg.data[5] = (0xff & *ptr);
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
-        //x-axis i
-        ptr = (unsigned int *)&this->x_Pid_data[speed - 1][1];
+    clearMsg();
+    msg.length = 8;
+    msg.data[0] = this->controller_Address;
+    msg.data[1] = 0x06;
+    msg.data[2] = 0x00;
+    msg.data[3] = 0xc1;
+    msg.data[4] = (0xff & (*ptr >> 8));
+    msg.data[5] = (0xff & *ptr);
+    CRC16Generate(&msg);
+    transmitData(&msg);
+    receiveData(&msg);
 
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc2;
-        msg.data[4] = (0xff & (*ptr >> 24));
-        msg.data[5] = (0xff & (*ptr >> 16));
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
+    //rotation i
+    ptr = (unsigned int *)&i;
 
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc3;
-        msg.data[4] = (0xff & (*ptr >> 8));
-        msg.data[5] = (0xff & *ptr);
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
-        //x-axis d
-        ptr = (unsigned int *)&this->x_Pid_data[speed - 1][2];
+    clearMsg();
+    msg.length = 8;
+    msg.data[0] = this->controller_Address;
+    msg.data[1] = 0x06;
+    msg.data[2] = 0x00;
+    msg.data[3] = 0xc2;
+    msg.data[4] = (0xff & (*ptr >> 24));
+    msg.data[5] = (0xff & (*ptr >> 16));
+    CRC16Generate(&msg);
+    transmitData(&msg);
+    receiveData(&msg);
 
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc4;
-        msg.data[4] = (0xff & (*ptr >> 24));
-        msg.data[5] = (0xff & (*ptr >> 16));
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
+    clearMsg();
+    msg.length = 8;
+    msg.data[0] = this->controller_Address;
+    msg.data[1] = 0x06;
+    msg.data[2] = 0x00;
+    msg.data[3] = 0xc3;
+    msg.data[4] = (0xff & (*ptr >> 8));
+    msg.data[5] = (0xff & *ptr);
+    CRC16Generate(&msg);
+    transmitData(&msg);
+    receiveData(&msg);
 
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc5;
-        msg.data[4] = (0xff & (*ptr >> 8));
-        msg.data[5] = (0xff & *ptr);
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);      
-    }
-    else if(direction == 2){
-        //y-axis p
-        ptr = (unsigned int *)&this->y_Pid_data[speed - 1][0];
+    //rotation d
+    ptr = (unsigned int *)&d;
 
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc0;
-        msg.data[4] = (0xff & (*ptr >> 24));
-        msg.data[5] = (0xff & (*ptr >> 16));
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
+    clearMsg();
+    msg.length = 8;
+    msg.data[0] = this->controller_Address;
+    msg.data[1] = 0x06;
+    msg.data[2] = 0x00;
+    msg.data[3] = 0xc4;
+    msg.data[4] = (0xff & (*ptr >> 24));
+    msg.data[5] = (0xff & (*ptr >> 16));
+    CRC16Generate(&msg);
+    transmitData(&msg);
+    receiveData(&msg);
 
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc1;
-        msg.data[4] = (0xff & (*ptr >> 8));
-        msg.data[5] = (0xff & *ptr);
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
-        //x-axis i
-        ptr = (unsigned int *)&this->y_Pid_data[speed - 1][1];
-
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc2;
-        msg.data[4] = (0xff & (*ptr >> 24));
-        msg.data[5] = (0xff & (*ptr >> 16));
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
-
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc3;
-        msg.data[4] = (0xff & (*ptr >> 8));
-        msg.data[5] = (0xff & *ptr);
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
-        //x-axis d
-        ptr = (unsigned int *)&this->y_Pid_data[speed - 1][2];
-
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc4;
-        msg.data[4] = (0xff & (*ptr >> 24));
-        msg.data[5] = (0xff & (*ptr >> 16));
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);
-
-        clearMsg();
-        msg.length = 8;
-        msg.data[0] = this->controller_Address;
-        msg.data[1] = 0x06;
-        msg.data[2] = 0x00;
-        msg.data[3] = 0xc5;
-        msg.data[4] = (0xff & (*ptr >> 8));
-        msg.data[5] = (0xff & *ptr);
-        CRC16Generate(&msg);
-        transmitData(&msg);
-        receiveData(&msg);      
-    }
-
-
+    clearMsg();
+    msg.length = 8;
+    msg.data[0] = this->controller_Address;
+    msg.data[1] = 0x06;
+    msg.data[2] = 0x00;
+    msg.data[3] = 0xc5;
+    msg.data[4] = (0xff & (*ptr >> 8));
+    msg.data[5] = (0xff & *ptr);
+    CRC16Generate(&msg);
+    transmitData(&msg);
+    receiveData(&msg);        
+    
     return;
 }
 

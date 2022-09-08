@@ -28,30 +28,31 @@ int main(int argc, char **argv){
         msg.request.rotation = rot;
         msg.request.head_direction = head;
 
+        if(!ros::ok()){
+            break;
+        }
+
         float duration;
 
         std::cout << "enter duration : " << std::endl;
         std::cin >> duration;
 
-        client.call(msg);
         ROS_INFO("call service!");
 
         double pass = 0;
 
         ros::Time start = ros::Time::now();
+        client.call(msg);
 
         while (pass <= duration)
         {
             ros::Time now = ros::Time::now();
-
             ros::Duration passTime = now - start;
             pass = passTime.toSec();
 
             client.call(msg);
         }
         
-
-
         msg.request.direction = 0;
         msg.request.velocity = 0;
         msg.request.rotation = 0;

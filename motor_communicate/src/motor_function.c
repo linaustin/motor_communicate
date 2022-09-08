@@ -108,11 +108,13 @@ void serialInit(){
 }
 
 void transmitData(serialData *transmitMsg){
+    /*
     printf("transmitMsg is :\n");
     for(int i = 0; i < transmitMsg->length; i++){
         printf("%x ", transmitMsg->data[i]);
     }
     printf("\n\n");
+    */
 
     write(serialPort, transmitMsg->data, transmitMsg->length);
 
@@ -142,13 +144,15 @@ void receiveData(serialData *receiveMsg){
         read(serialPort, &(receiveMsg->data[receiveMsg->length]), 3);
         receiveMsg->length += 3;
     }
-
+    
+    /*
     printf("receiveMsg is : \n");
     for(int i = 0; i < receiveMsg->length; i++){
         printf("%hhx ", receiveMsg->data[i]);
     }
     printf("\n\n");
-
+    */
+   
     return;
 }
 
