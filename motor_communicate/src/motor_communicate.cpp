@@ -169,7 +169,6 @@ wheel wheelRR(4);
 }
 
 motor_communicate::motor_info publish_data;
-
 ros::Publisher log_publisher;
 
 int main(int argc, char **argv){

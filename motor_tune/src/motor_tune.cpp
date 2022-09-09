@@ -27,7 +27,7 @@ int main(int argc, char **argv){
         msg.request.velocity = vel;
         msg.request.rotation = rot;
         msg.request.head_direction = head;
-
+    
         if(!ros::ok()){
             break;
         }
@@ -38,7 +38,9 @@ int main(int argc, char **argv){
         std::cin >> duration;
 
         ROS_INFO("call service!");
+        client.call(msg);
 
+    /*
         double pass = 0;
 
         ros::Time start = ros::Time::now();
@@ -52,6 +54,9 @@ int main(int argc, char **argv){
 
             client.call(msg);
         }
+      */
+
+        ros::Duration(duration).sleep();
         
         msg.request.direction = 0;
         msg.request.velocity = 0;

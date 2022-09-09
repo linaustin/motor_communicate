@@ -10,8 +10,8 @@
 #include <termios.h>
 #include <unistd.h>
 
-static uint8_t CRCHighTable[256];
-static uint8_t CRCLowTable[256];
+extern const uint8_t CRCHighTable[256];
+extern const uint8_t CRCLowTable[256];
 
 extern int serialPort;  //serial port object
 

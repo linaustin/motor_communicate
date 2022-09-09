@@ -127,6 +127,8 @@ void wheel::set_X_Speed(int speed, int bias){
     this->last_target_speed = this->target_speed;
     this->target_speed = speedValue;
 
+    std::cout << "wheel " << this->controller_Address << " target speed" << speedValue << std:: endl;
+
     return;
 };
 
@@ -170,6 +172,8 @@ void wheel::set_Y_Speed(int speed, int bias){
     this->last_target_speed = this->target_speed;
     this->target_speed = speedValue;
 
+    std::cout << "wheel " << this->controller_Address << " target speed" << speedValue << std:: endl;
+
     return;
 };
 
@@ -205,52 +209,54 @@ void wheel::setRoatation(int direction){
     this->last_target_speed = this->target_speed;
     this->target_speed = speedValue;
 
+    std::cout << "wheel " << this->controller_Address << " target speed" << speedValue << std:: endl;
+
     return;
 }
 
 void wheel::setPID(int direction, int speed, bool load){
 
     uint32_t *ptr;
-    float p;
-    float i;
-    float d;
+    float p_val;
+    float i_val;
+    float d_val;
 
     if(load){
         if(direction == 0){
-            p = rotation_Pid_data_load[0];
-            i = rotation_Pid_data_load[1];
-            d = rotation_Pid_data_load[2];
+            p_val = rotation_Pid_data_load[0];
+            i_val = rotation_Pid_data_load[1];
+            d_val = rotation_Pid_data_load[2];
         }
         else if(direction == 1){
-            p = x_Pid_data_load[speed - 1][0];
-            i = x_Pid_data_load[speed - 1][1];
-            d = x_Pid_data_load[speed - 1][2];
+            p_val = x_Pid_data_load[speed - 1][0];
+            i_val = x_Pid_data_load[speed - 1][1];
+            d_val = x_Pid_data_load[speed - 1][2];
         }
         else if(direction == 2){
-            p = y_Pid_data_load[speed - 1][0];
-            i = y_Pid_data_load[speed - 1][1];
-            d = y_Pid_data_load[speed - 1][2];
+            p_val = y_Pid_data_load[speed - 1][0];
+            i_val = y_Pid_data_load[speed - 1][1];
+            d_val = y_Pid_data_load[speed - 1][2];
         }
     }else{
         if(direction == 0){
-            p = rotation_Pid_data_unload[0];
-            i = rotation_Pid_data_unload[1];
-            d = rotation_Pid_data_unload[2];
+            p_val = rotation_Pid_data_unload[0];
+            i_val = rotation_Pid_data_unload[1];
+            d_val = rotation_Pid_data_unload[2];
         }
         else if(direction == 1){
-            p = x_Pid_data_unload[speed - 1][0];
-            i = x_Pid_data_unload[speed - 1][1];
-            d = x_Pid_data_unload[speed - 1][2];
+            p_val = x_Pid_data_unload[speed - 1][0];
+            i_val = x_Pid_data_unload[speed - 1][1];
+            d_val = x_Pid_data_unload[speed - 1][2];
         }
         else if(direction == 2){
-            p = y_Pid_data_unload[speed - 1][0];
-            i = y_Pid_data_unload[speed - 1][1];
-            d = y_Pid_data_unload[speed - 1][2];
+            p_val = y_Pid_data_unload[speed - 1][0];
+            i_val = y_Pid_data_unload[speed - 1][1];
+            d_val = y_Pid_data_unload[speed - 1][2];
         }
     }
     
     //rotation p
-    ptr = (unsigned int *)&p;
+    ptr = (unsigned int *)&(p_val);
 
     clearMsg();
     msg.length = 8;
@@ -277,7 +283,7 @@ void wheel::setPID(int direction, int speed, bool load){
     receiveData(&msg);
 
     //rotation i
-    ptr = (unsigned int *)&i;
+    ptr = (unsigned int *)&(i_val);
 
     clearMsg();
     msg.length = 8;
@@ -304,7 +310,7 @@ void wheel::setPID(int direction, int speed, bool load){
     receiveData(&msg);
 
     //rotation d
-    ptr = (unsigned int *)&d;
+    ptr = (unsigned int *)&(d_val);
 
     clearMsg();
     msg.length = 8;
@@ -399,24 +405,27 @@ void wheel::getRpm(){
     receiveData(&this->msg);
 
     if(this->msg.length >= 9){
-        int32_t rpm;
-        rpm |= this->msg.data[3];
-        rpm = (rpm << 8);
-        rpm |= this->msg.data[4];
+        int rpm_local = 0;
+        rpm_local |= this->msg.data[3];
+        rpm_local = (rpm_local << 8);
+        rpm_local |= this->msg.data[4];
 
         if(this->msg.data[6]){
-            rpm = rpm * 10;
+            rpm_local = rpm_local * 10;
         }
 
         if(this->target_speed < 0){
-            rpm = -1*rpm;
+            rpm_local = -1*rpm_local;
         }
         if(this->target_speed == 0 && this->last_target_speed < 0){
-            rpm = -1*rpm;
+            rpm_local = -1*rpm_local;
         }
 
-        this->current_rpm = rpm;
+        this->current_rpm = rpm_local;
 
+        std::cout << "wheel " << (int)this->controller_Address << " rpm " << rpm_local << std::endl;
+
+        rpm_local = 0;
     }
     else{
         ROS_INFO("wheel_%d reading rpm error\n", this->controller_Address);

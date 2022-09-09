@@ -35,8 +35,6 @@ class wheel{
     int output_rpm();
     int output_target();
 
-    static std::fstream output_file;
-
     private:
 
     void clearMsg();
