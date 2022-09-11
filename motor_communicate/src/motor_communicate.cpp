@@ -6,6 +6,10 @@
 #include <chrono>
 #include <motor_communicate/motor_info.h>
 
+// log_none log_main log_callback
+
+#define log_none
+
 namespace robot{
 
 //struct declare
@@ -45,118 +49,46 @@ int motor_Rpm_Rotation = 500;
 int last_direction = 0;
 //load pid
 
-float wheel_1_x_pid_load[3][3] = {
-    {3, 0.001, 0.001},
-    {2.25, 0.001, 0.001},
-    {2.25, 0.001, 0.001}
-};
-
-float wheel_1_y_pid_load[3][3] = {
-    {3.3, 0.001, 0.001},
-    {6.7, 0.001, 0.001},
-    {6.7, 0.001, 0.001}
-};
+float wheel_1_x_pid_load[3] = {2.25, 0.001, 0.001};
+float wheel_1_y_pid_load[3] = {6.7, 0.001, 0.001};
 
 float wheel_1_rotation_pid_load[3] = {0.2, 0.001, 0.001};
 
-float wheel_2_x_pid_load[3][3] = {
-    {3, 0.001, 0.001},
-    {2.25, 0.001, 0.001},
-    {2.25, 0.001, 0.001}
-};
-
-float wheel_2_y_pid_load[3][3] = {
-    {1.8, 0.001, 0.001},
-    {3.2, 0.001, 0.001},
-    {3.2, 0.001, 0.001}
-};
+float wheel_2_x_pid_load[3] = {2.25, 0.001, 0.001};
+float wheel_2_y_pid_load[3] = {3.2, 0.001, 0.001};
 
 float wheel_2_rotation_pid_load[3] = {0.2, 0.001, 0.001};
 
-float wheel_3_x_pid_load[3][3] = {
-    {1.5, 0.001, 0.001},
-    {1.125, 0.001, 0.001},
-    {1.125, 0.001, 0.001}
-};
-
-float wheel_3_y_pid_load[3][3] = {
-    {2.46, 0.001, 0.001},
-    {2.46, 0.001, 0.001},
-    {2.46, 0.001, 0.001}
-};
+float wheel_3_x_pid_load[3] = {1.125, 0.001, 0.001};
+float wheel_3_y_pid_load[3] = {2.46, 0.001, 0.001};
 
 float wheel_3_rotation_pid_load[3] = {0.2, 0.001, 0.001};
 
-float wheel_4_x_pid_load[3][3] = {
-    {4.5, 0.001, 0.001},
-    {3.375, 0.001, 0.001},
-    {3.375, 0.001, 0.001}
-};
-
-float wheel_4_y_pid_load[3][3] = {
-    {1.6, 0.001, 0.001},
-    {1.6, 0.001, 0.001},
-    {1.6, 0.001, 0.001}
-};
+float wheel_4_x_pid_load[3] = {3.375, 0.001, 0.001};
+float wheel_4_y_pid_load[3] = {1.6, 0.001, 0.001};
 
 float wheel_4_rotation_pid_load[3] = {0.2, 0.001, 0.001};
 
 
 // unload pid
 
-float wheel_1_x_pid_unload[3][3] = {
-    {0.03, 0.002, 0.001},
-    {0.03, 0.002, 0.001},
-    {0.03, 0.002, 0.001}
-};
-
-float wheel_1_y_pid_unload[3][3] = {
-    {1.92, 0.003, 0.001},
-    {1.92, 0.003, 0.001},
-    {1.92, 0.003, 0.001}
-};
+float wheel_1_x_pid_unload[3] = {0.03, 0.002, 0.001};
+float wheel_1_y_pid_unload[3] = {1.92, 0.003, 0.001};
 
 float wheel_1_rotation_pid_unload[3] = {0.02, 0.002, 0.001};
 
-float wheel_2_x_pid_unload[3][3] = {
-    {0.03, 0.002, 0.001},
-    {0.03, 0.002, 0.001},
-    {0.03, 0.002, 0.001}
-};
-
-float wheel_2_y_pid_unload[3][3] = {
-    {0.72, 0.003, 0.001},
-    {0.72, 0.003, 0.001},
-    {0.72, 0.003, 0.001}
-};
+float wheel_2_x_pid_unload[3] = {0.03, 0.002, 0.001};
+float wheel_2_y_pid_unload[3] = {0.72, 0.003, 0.001};
 
 float wheel_2_rotation_pid_unload[3] = {0.02, 0.003, 0.001};
 
-float wheel_3_x_pid_unload[3][3] = {
-    {0.015, 0.002, 0.001},
-    {0.015, 0.002, 0.001},
-    {0.015, 0.002, 0.001}
-};
-
-float wheel_3_y_pid_unload[3][3] = {
-    {1.584, 0.003, 0.001},
-    {1.584, 0.003, 0.001},
-    {1.584, 0.003, 0.001}
-};
+float wheel_3_x_pid_unload[3] = {0.015, 0.002, 0.001};
+float wheel_3_y_pid_unload[3] = {1.584, 0.003, 0.001};
 
 float wheel_3_rotation_pid_unload[3] = {0.02, 0.003, 0.001};
 
-float wheel_4_x_pid_unload[3][3] = {
-    {0.045, 0.002, 0.001},
-    {0.045, 0.002, 0.001},
-    {0.045, 0.002, 0.001}
-};
-
-float wheel_4_y_pid_unload[3][3] = {
-    {0.64, 0.003, 0.001},
-    {0.64, 0.003, 0.001},
-    {0.64, 0.003, 0.001}
-};
+float wheel_4_x_pid_unload[3] = {0.045, 0.002, 0.001};
+float wheel_4_y_pid_unload[3] = {0.64, 0.003, 0.001};
 
 float wheel_4_rotation_pid_unload[3] = {0.02, 0.003, 0.001};
 
@@ -197,25 +129,27 @@ int main(int argc, char **argv){
     robot::wheelRL.settingRpmRotation(robot::motor_Rpm_Rotation);
     robot::wheelRR.settingRpmRotation(robot::motor_Rpm_Rotation);
 
-    robot::wheelFL.settingXPID(robot::wheel_1_x_pid_load, sizeof(robot::wheel_1_x_pid_load)/sizeof(robot::wheel_1_x_pid_load[0]), robot::wheel_1_x_pid_unload, sizeof(robot::wheel_1_x_pid_unload)/sizeof(robot::wheel_1_x_pid_unload[0]));
-    robot::wheelFL.settingYPID(robot::wheel_1_y_pid_load, sizeof(robot::wheel_1_y_pid_load)/sizeof(robot::wheel_1_y_pid_load[0]), robot::wheel_1_y_pid_unload, sizeof(robot::wheel_1_y_pid_unload)/sizeof(robot::wheel_1_y_pid_unload[0]));
+    robot::wheelFL.settingXPID(robot::wheel_1_x_pid_load, robot::wheel_1_x_pid_unload);
+    robot::wheelFL.settingYPID(robot::wheel_1_y_pid_load, robot::wheel_1_y_pid_unload);
     robot::wheelFL.settingRotationPID(robot::wheel_1_rotation_pid_load, robot::wheel_1_rotation_pid_unload);
 
-    robot::wheelFR.settingXPID(robot::wheel_2_x_pid_load, sizeof(robot::wheel_2_x_pid_load)/sizeof(robot::wheel_2_x_pid_load[0]), robot::wheel_2_x_pid_unload, sizeof(robot::wheel_2_x_pid_unload)/sizeof(robot::wheel_2_x_pid_unload[0]));
-    robot::wheelFR.settingYPID(robot::wheel_2_y_pid_load, sizeof(robot::wheel_2_y_pid_load)/sizeof(robot::wheel_2_y_pid_load[0]), robot::wheel_2_y_pid_unload, sizeof(robot::wheel_2_y_pid_unload)/sizeof(robot::wheel_2_y_pid_unload[0]));
+    robot::wheelFR.settingXPID(robot::wheel_2_x_pid_load, robot::wheel_2_x_pid_unload);
+    robot::wheelFR.settingYPID(robot::wheel_2_y_pid_load, robot::wheel_2_y_pid_unload);
     robot::wheelFR.settingRotationPID(robot::wheel_2_rotation_pid_load, robot::wheel_2_rotation_pid_unload);
 
-    robot::wheelRL.settingXPID(robot::wheel_3_x_pid_load, sizeof(robot::wheel_3_x_pid_load)/sizeof(robot::wheel_3_x_pid_load[0]), robot::wheel_3_x_pid_unload, sizeof(robot::wheel_3_x_pid_unload)/sizeof(robot::wheel_3_x_pid_unload[0]));
-    robot::wheelRL.settingYPID(robot::wheel_3_y_pid_load, sizeof(robot::wheel_3_y_pid_load)/sizeof(robot::wheel_3_y_pid_load[0]), robot::wheel_3_y_pid_unload, sizeof(robot::wheel_3_y_pid_unload)/sizeof(robot::wheel_3_y_pid_unload[0]));
+    robot::wheelRL.settingXPID(robot::wheel_3_x_pid_load, robot::wheel_3_x_pid_unload);
+    robot::wheelRL.settingYPID(robot::wheel_3_y_pid_load, robot::wheel_3_y_pid_unload);
     robot::wheelRL.settingRotationPID(robot::wheel_3_rotation_pid_load, robot::wheel_3_rotation_pid_unload);
 
-    robot::wheelRR.settingXPID(robot::wheel_4_x_pid_load, sizeof(robot::wheel_4_x_pid_load)/sizeof(robot::wheel_4_x_pid_load[0]), robot::wheel_4_x_pid_unload, sizeof(robot::wheel_4_x_pid_unload)/sizeof(robot::wheel_4_x_pid_unload[0]));
-    robot::wheelRR.settingYPID(robot::wheel_4_y_pid_load, sizeof(robot::wheel_4_y_pid_load)/sizeof(robot::wheel_4_y_pid_load[0]), robot::wheel_4_y_pid_unload, sizeof(robot::wheel_4_y_pid_unload)/sizeof(robot::wheel_4_y_pid_unload[0]));
+    robot::wheelRR.settingXPID(robot::wheel_4_x_pid_load, robot::wheel_4_x_pid_unload);
+    robot::wheelRR.settingYPID(robot::wheel_4_y_pid_load, robot::wheel_4_y_pid_unload);
     robot::wheelRR.settingRotationPID(robot::wheel_4_rotation_pid_load, robot::wheel_4_rotation_pid_unload);
 
-    log_publisher = rosNh.advertise<motor_communicate::motor_info>("/motor_log", 1000);
     ros::ServiceServer motor_service = rosNh.advertiseService("controller_command", robot::navCallback);
-    /*
+
+#ifdef log_main
+    log_publisher = rosNh.advertise<motor_communicate::motor_info>("/motor_log", 1000);
+
     while(ros::ok()){
         robot::wheelFL.getRpm();
         robot::wheelFR.getRpm();
@@ -235,11 +169,13 @@ int main(int argc, char **argv){
 
         log_publisher.publish(publish_data);
         std::cout << "publish once " << std::endl;
-
         ros::spinOnce();
     }
-    */
+#endif
+
+#ifndef log_main
     ros::spin();
+#endif
 
     robot::stop();
     robot::freeStop();
@@ -298,7 +234,8 @@ bool robot::navCallback(nav::Service_msg::Request &request, nav::Service_msg::Re
     }
     
     robot::last_direction = nav_Command.type;
-/*
+
+#ifdef log_callback
     robot::wheelFL.getRpm();
     robot::wheelFR.getRpm();
     robot::wheelRL.getRpm();
@@ -317,7 +254,8 @@ bool robot::navCallback(nav::Service_msg::Request &request, nav::Service_msg::Re
 
     log_publisher.publish(publish_data);
     std::cout << "publish once " << std::endl;
-*/
+#endif
+
     return true;
 }
 
@@ -470,12 +408,12 @@ void robot::robotRotation(int speed, int rotation){
         return;
     }
 
-        if(robot::last_direction != 0){
-            robot::wheelFL.setPID(0, 1, robot::is_load);
-            robot::wheelFR.setPID(0, 1, robot::is_load);
-            robot::wheelRL.setPID(0, 1, robot::is_load);
-            robot::wheelRR.setPID(0, 1, robot::is_load);
-        }
+    if(robot::last_direction != 0){
+        robot::wheelFL.setPID(0, 1, robot::is_load);
+        robot::wheelFR.setPID(0, 1, robot::is_load);
+        robot::wheelRL.setPID(0, 1, robot::is_load);
+        robot::wheelRR.setPID(0, 1, robot::is_load);
+    }
 
     if(rotation == 1){
         robot::wheelFL.setRoatation(1);

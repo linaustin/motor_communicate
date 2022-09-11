@@ -18,8 +18,8 @@ class wheel{
     void settingRpmData(int *xdata, int xlength, int *ydata, int ylength);
     void settingRpmBias(int *xdata, int xlength, int *ydata, int ylength);
     void settingRpmRotation(int speed);
-    void settingXPID(float data_load[][3], int length_load, float data_unload[][3], int length_unload);
-    void settingYPID(float data_load[][3], int length_load, float data_unload[][3], int length_unload);
+    void settingXPID(float data_load[3], float data_unload[3]);
+    void settingYPID(float data_load[3], float data_unload[3]);
     void settingRotationPID(float *data_load, float *data_unload);
 
     void set_X_Speed(int speed, int bias);
@@ -61,21 +61,12 @@ class wheel{
 
     int rpm_Rotation;
 
-    float **x_Pid_data_load;
-    int x_Pid_data_load_Length;
-
-    float **y_Pid_data_load;
-    int y_Pid_data_load_Length;
-
+    float *x_Pid_data_load;
+    float *y_Pid_data_load;
     float *rotation_Pid_data_load;
 
-
-    float **x_Pid_data_unload;
-    int x_Pid_data_unload_Length;
-
-    float **y_Pid_data_unload;
-    int y_Pid_data_unload_Length;
-
+    float *x_Pid_data_unload;
+    float *y_Pid_data_unload;
     float *rotation_Pid_data_unload;
 };
 

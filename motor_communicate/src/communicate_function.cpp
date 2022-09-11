@@ -43,36 +43,20 @@ void wheel::settingRpmRotation(int speed)
     return;
 }
 
-void wheel::settingXPID(float data_load[][3], int length_load, float data_unload[][3], int length_unload){
+void wheel::settingXPID(float data_load[3], float data_unload[3]){
 
-    this->x_Pid_data_load = new float*[length_load];
+    this->x_Pid_data_load = data_load;
 
-    for(int i = 0; i < length_load; i++){
-        x_Pid_data_load[i] = data_load[i];
-    }
-
-    this->x_Pid_data_unload = new float*[length_unload];
-
-    for(int i = 0; i < length_unload; i++){
-        x_Pid_data_unload[i] = data_unload[i];
-    }
+    this->x_Pid_data_unload = data_unload;
 
     return;
 }
 
-void wheel::settingYPID(float data_load[][3], int length_load, float data_unload[][3], int length_unload){
+void wheel::settingYPID(float data_load[3], float data_unload[3]){
 
-    this->y_Pid_data_load = new float*[length_load];
+    this->y_Pid_data_load = data_load;
 
-    for(int i = 0; i < length_load; i++){
-        this->y_Pid_data_load[i] = data_load[i];
-    }
-
-    this->y_Pid_data_unload = new float*[length_unload];
-
-    for(int i = 0; i < length_unload; i++){
-        this->y_Pid_data_unload[i] = data_unload[i];
-    }
+    this->y_Pid_data_unload = data_unload;
 
     return;
 }
@@ -228,14 +212,14 @@ void wheel::setPID(int direction, int speed, bool load){
             d_val = rotation_Pid_data_load[2];
         }
         else if(direction == 1){
-            p_val = x_Pid_data_load[speed - 1][0];
-            i_val = x_Pid_data_load[speed - 1][1];
-            d_val = x_Pid_data_load[speed - 1][2];
+            p_val = x_Pid_data_load[0];
+            i_val = x_Pid_data_load[1];
+            d_val = x_Pid_data_load[2];
         }
         else if(direction == 2){
-            p_val = y_Pid_data_load[speed - 1][0];
-            i_val = y_Pid_data_load[speed - 1][1];
-            d_val = y_Pid_data_load[speed - 1][2];
+            p_val = y_Pid_data_load[0];
+            i_val = y_Pid_data_load[1];
+            d_val = y_Pid_data_load[2];
         }
     }else{
         if(direction == 0){
@@ -244,14 +228,14 @@ void wheel::setPID(int direction, int speed, bool load){
             d_val = rotation_Pid_data_unload[2];
         }
         else if(direction == 1){
-            p_val = x_Pid_data_unload[speed - 1][0];
-            i_val = x_Pid_data_unload[speed - 1][1];
-            d_val = x_Pid_data_unload[speed - 1][2];
+            p_val = x_Pid_data_unload[0];
+            i_val = x_Pid_data_unload[1];
+            d_val = x_Pid_data_unload[2];
         }
         else if(direction == 2){
-            p_val = y_Pid_data_unload[speed - 1][0];
-            i_val = y_Pid_data_unload[speed - 1][1];
-            d_val = y_Pid_data_unload[speed - 1][2];
+            p_val = y_Pid_data_unload[0];
+            i_val = y_Pid_data_unload[1];
+            d_val = y_Pid_data_unload[2];
         }
     }
     
