@@ -172,7 +172,7 @@ void wheel::set_Y_Speed(int speed, int bias){
     this->last_target_speed = this->target_speed;
     this->target_speed = speedValue;
 
-    std::cout << "wheel " << this->controller_Address << " target speed" << speedValue << std:: endl;
+    //std::cout << "wheel " << this->controller_Address << " target speed" << speedValue << std:: endl;
 
     return;
 };
@@ -209,7 +209,7 @@ void wheel::setRoatation(int direction){
     this->last_target_speed = this->target_speed;
     this->target_speed = speedValue;
 
-    std::cout << "wheel " << this->controller_Address << " target speed" << speedValue << std:: endl;
+    //std::cout << "wheel " << this->controller_Address << " target speed" << speedValue << std:: endl;
 
     return;
 }
@@ -359,7 +359,7 @@ void wheel::stop(){
 
     this->last_target_speed = this->target_speed;
     this->target_speed = 0;
-
+    std::cout << "wheel : " << (int)this->controller_Address << " stop()" << std::endl;
     return;
 }
 
@@ -417,7 +417,7 @@ void wheel::getRpm(){
         if(this->target_speed < 0){
             rpm_local = -1*rpm_local;
         }
-        if(this->target_speed == 0 && this->last_target_speed < 0){
+        else if(this->target_speed == 0 && this->last_target_speed < 0){
             rpm_local = -1*rpm_local;
         }
 
