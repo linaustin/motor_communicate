@@ -343,7 +343,7 @@ void wheel::stop(){
 
     this->last_target_speed = this->target_speed;
     this->target_speed = 0;
-    std::cout << "wheel : " << (int)this->controller_Address << " stop()" << std::endl;
+    //std::cout << "wheel : " << (int)this->controller_Address << " stop()" << std::endl;
     return;
 }
 

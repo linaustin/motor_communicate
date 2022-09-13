@@ -8,7 +8,7 @@
 
 // log_none log_main log_callback
 
-#define log_none
+#define log_main
 
 namespace robot{
 
@@ -36,59 +36,59 @@ void robotRotation(int speed, int rotation);
 
 
 //data setting
-bool is_load = false;
+bool is_load = true;
 
-int motor_Rpm_X_Data[4] = {0, 200, 1000, 1500};
-int motor_Rpm_X_Bias[4] = {0, 20, 100, 100};
+int motor_Rpm_X_Data[4] = {0, 300, 1000, 1500};
+int motor_Rpm_X_Bias[4] = {0, 30, 100, 150};
 
-int motor_Rpm_Y_Data[4] = {0, 200, 1000, 2000};
-int motor_Rpm_Y_Bias[4] = {0, 60, 300, 600};
+int motor_Rpm_Y_Data[4] = {0, 300, 1000, 2000};
+int motor_Rpm_Y_Bias[4] = {0, 90, 300, 600};
 
-int motor_Rpm_Rotation = 500;
+int motor_Rpm_Rotation = 300;
 
 int last_direction = 0;
 //load pid
 
-float wheel_1_x_pid_load[3] = {2.25, 0.001, 0.001};
-float wheel_1_y_pid_load[3] = {6.7, 0.001, 0.001};
+float wheel_1_x_pid_load[3] = {0.135, 0.002, 0.004};
+float wheel_1_y_pid_load[3] = {3.15, 0.00001, 0.001};
 
-float wheel_1_rotation_pid_load[3] = {0.2, 0.001, 0.001};
+float wheel_1_rotation_pid_load[3] = {0.02, 0.004, 0.004};
 
-float wheel_2_x_pid_load[3] = {2.25, 0.001, 0.001};
-float wheel_2_y_pid_load[3] = {3.2, 0.001, 0.001};
+float wheel_2_x_pid_load[3] = {0.135, 0.002, 0.004};
+float wheel_2_y_pid_load[3] = {3.15, 0.00001, 0.001};
 
-float wheel_2_rotation_pid_load[3] = {0.2, 0.001, 0.001};
+float wheel_2_rotation_pid_load[3] = {0.02, 0.004, 0.004};
 
-float wheel_3_x_pid_load[3] = {1.125, 0.001, 0.001};
-float wheel_3_y_pid_load[3] = {2.46, 0.001, 0.001};
+float wheel_3_x_pid_load[3] = {0.0675, 0.002, 0.004};
+float wheel_3_y_pid_load[3] = {1.575, 0.00001, 0.001};
 
-float wheel_3_rotation_pid_load[3] = {0.2, 0.001, 0.001};
+float wheel_3_rotation_pid_load[3] = {0.02, 0.004, 0.004};
 
-float wheel_4_x_pid_load[3] = {3.375, 0.001, 0.001};
-float wheel_4_y_pid_load[3] = {1.6, 0.001, 0.001};
+float wheel_4_x_pid_load[3] = {0.1025, 0.002, 0.004};
+float wheel_4_y_pid_load[3] = {4.725, 0.00001, 0.001};
 
-float wheel_4_rotation_pid_load[3] = {0.2, 0.001, 0.001};
+float wheel_4_rotation_pid_load[3] = {0.02, 0.004, 0.004};
 
 
 // unload pid
 
-float wheel_1_x_pid_unload[3] = {0.03, 0.002, 0.001};
-float wheel_1_y_pid_unload[3] = {1.92, 0.003, 0.001};
+float wheel_1_x_pid_unload[3] = {0.324, 0.002, 0.05};
+float wheel_1_y_pid_unload[3] = {5.76, 0.008, 0.003};
 
 float wheel_1_rotation_pid_unload[3] = {0.02, 0.002, 0.001};
 
-float wheel_2_x_pid_unload[3] = {0.03, 0.002, 0.001};
-float wheel_2_y_pid_unload[3] = {0.72, 0.003, 0.001};
+float wheel_2_x_pid_unload[3] = {0.324, 0.002, 0.05};
+float wheel_2_y_pid_unload[3] = {3, 0.008, 0.003};
 
 float wheel_2_rotation_pid_unload[3] = {0.02, 0.003, 0.001};
 
-float wheel_3_x_pid_unload[3] = {0.015, 0.002, 0.001};
-float wheel_3_y_pid_unload[3] = {1.584, 0.003, 0.001};
+float wheel_3_x_pid_unload[3] = {0.162, 0.002, 0.05};
+float wheel_3_y_pid_unload[3] = {5.4, 0.008, 0.003};
 
 float wheel_3_rotation_pid_unload[3] = {0.02, 0.003, 0.001};
 
-float wheel_4_x_pid_unload[3] = {0.045, 0.002, 0.001};
-float wheel_4_y_pid_unload[3] = {0.64, 0.003, 0.001};
+float wheel_4_x_pid_unload[3] = {0.486, 0.002, 0.05};
+float wheel_4_y_pid_unload[3] = {1.92, 0.008, 0.003};
 
 float wheel_4_rotation_pid_unload[3] = {0.02, 0.003, 0.001};
 
@@ -192,7 +192,7 @@ bool robot::navCallback(nav::Service_msg::Request &request, nav::Service_msg::Re
 
     response.receive_data = true;
 
-    ROS_INFO("type is : %d velocity is : %d bias is %d heading is %d\n", robot::nav_Command.type, robot::nav_Command.velocity, robot::nav_Command.bias, heading);
+    //ROS_INFO("type is : %d velocity is : %d bias is %d heading is %d\n", robot::nav_Command.type, robot::nav_Command.velocity, robot::nav_Command.bias, heading);
 
     if( heading == 270){
         if(nav_Command.type == 1){
@@ -221,7 +221,7 @@ bool robot::navCallback(nav::Service_msg::Request &request, nav::Service_msg::Re
         }
     }
 
-    ROS_INFO("After transform:  type is : %d velocity is : %d bias is %d\n", robot::nav_Command.type, robot::nav_Command.velocity, robot::nav_Command.bias);
+    ///ROS_INFO("After transform:  type is : %d velocity is : %d bias is %d\n", robot::nav_Command.type, robot::nav_Command.velocity, robot::nav_Command.bias);
 
     if(robot::nav_Command.type == 0){
         robot::robotRotation(robot::nav_Command.velocity, robot::nav_Command.bias);
@@ -382,16 +382,16 @@ void robot::robotMove_Yaxis(int speed, int rotation){
             robot::wheelRR.set_Y_Speed(-1*speed, 0);
         }
         else if(rotation == 1){
-            robot::wheelFL.set_Y_Speed(speed, 1);
-            robot::wheelFR.set_Y_Speed(speed, 1);
-            robot::wheelRL.set_Y_Speed(-1*speed, 2);
-            robot::wheelRR.set_Y_Speed(-1*speed, 2);
-        }
-        else if(rotation == 2){
             robot::wheelFL.set_Y_Speed(speed, 2);
             robot::wheelFR.set_Y_Speed(speed, 2);
             robot::wheelRL.set_Y_Speed(-1*speed, 1);
             robot::wheelRR.set_Y_Speed(-1*speed, 1);
+        }
+        else if(rotation == 2){
+            robot::wheelFL.set_Y_Speed(speed, 1);
+            robot::wheelFR.set_Y_Speed(speed, 1);
+            robot::wheelRL.set_Y_Speed(-1*speed, 2);
+            robot::wheelRR.set_Y_Speed(-1*speed, 2);
         }
     }
 
