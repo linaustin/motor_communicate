@@ -8,7 +8,7 @@
 
 // log_none log_main log_callback
 
-#define log_main
+#define log_none
 
 namespace robot{
 

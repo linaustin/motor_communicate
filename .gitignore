@@ -1,4 +1,8 @@
-2022_tdk_navigation/*
+2022_tdk_navigation/
+
+hector_slam/
+
+velodyne/
 
 build/*
 
