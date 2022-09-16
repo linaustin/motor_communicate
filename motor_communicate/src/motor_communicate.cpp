@@ -12,6 +12,8 @@
 
 namespace robot{
 
+    ros::NodeHandle robotNh;
+
 //struct declare
 
 //ros command struct
@@ -33,6 +35,7 @@ void freeStop();
 void robotMove_Xaxis(int speed, int rotation);
 void robotMove_Yaxis(int speed, int rotation);
 void robotRotation(int speed, int rotation);
+void getparam();
 
 
 //data setting
@@ -49,48 +52,48 @@ int motor_Rpm_Rotation = 300;
 int last_direction = 0;
 //load pid
 
-float wheel_1_x_pid_load[3] = {0.135, 0.002, 0.004};
-float wheel_1_y_pid_load[3] = {3.15, 0.00001, 0.001};
+float wheel_1_x_pid_load[3];
+float wheel_1_y_pid_load[3];
 
-float wheel_1_rotation_pid_load[3] = {0.02, 0.004, 0.004};
+float wheel_1_rotation_pid_load[3];
 
-float wheel_2_x_pid_load[3] = {0.135, 0.002, 0.004};
-float wheel_2_y_pid_load[3] = {3.15, 0.00001, 0.001};
+float wheel_2_x_pid_load[3];
+float wheel_2_y_pid_load[3];
 
-float wheel_2_rotation_pid_load[3] = {0.02, 0.004, 0.004};
+float wheel_2_rotation_pid_load[3];
 
-float wheel_3_x_pid_load[3] = {0.0675, 0.002, 0.004};
-float wheel_3_y_pid_load[3] = {1.575, 0.00001, 0.001};
+float wheel_3_x_pid_load[3];
+float wheel_3_y_pid_load[3];
 
-float wheel_3_rotation_pid_load[3] = {0.02, 0.004, 0.004};
+float wheel_3_rotation_pid_load[3];
 
-float wheel_4_x_pid_load[3] = {0.1025, 0.002, 0.004};
-float wheel_4_y_pid_load[3] = {4.725, 0.00001, 0.001};
+float wheel_4_x_pid_load[3];
+float wheel_4_y_pid_load[3];
 
-float wheel_4_rotation_pid_load[3] = {0.02, 0.004, 0.004};
+float wheel_4_rotation_pid_load[3];
 
 
 // unload pid
 
-float wheel_1_x_pid_unload[3] = {0.324, 0.002, 0.05};
-float wheel_1_y_pid_unload[3] = {5.76, 0.008, 0.003};
+float wheel_1_x_pid_unload[3];
+float wheel_1_y_pid_unload[3];
 
-float wheel_1_rotation_pid_unload[3] = {0.02, 0.002, 0.001};
+float wheel_1_rotation_pid_unload[3];
 
-float wheel_2_x_pid_unload[3] = {0.324, 0.002, 0.05};
-float wheel_2_y_pid_unload[3] = {3, 0.008, 0.003};
+float wheel_2_x_pid_unload[3];
+float wheel_2_y_pid_unload[3];
 
-float wheel_2_rotation_pid_unload[3] = {0.02, 0.003, 0.001};
+float wheel_2_rotation_pid_unload[3];
 
-float wheel_3_x_pid_unload[3] = {0.162, 0.002, 0.05};
-float wheel_3_y_pid_unload[3] = {5.4, 0.008, 0.003};
+float wheel_3_x_pid_unload[3];
+float wheel_3_y_pid_unload[3];
 
-float wheel_3_rotation_pid_unload[3] = {0.02, 0.003, 0.001};
+float wheel_3_rotation_pid_unload[3];
 
-float wheel_4_x_pid_unload[3] = {0.486, 0.002, 0.05};
-float wheel_4_y_pid_unload[3] = {1.92, 0.008, 0.003};
+float wheel_4_x_pid_unload[3];
+float wheel_4_y_pid_unload[3];
 
-float wheel_4_rotation_pid_unload[3] = {0.02, 0.003, 0.001};
+float wheel_4_rotation_pid_unload[3];
 
 //object declare
 
@@ -109,6 +112,7 @@ int main(int argc, char **argv){
     //ros node init
     ros::init(argc, argv, "motor_communicate");
     ros::NodeHandle rosNh;
+    robot::robotNh = rosNh;
 
     //init serial port
     serialInit();
@@ -400,8 +404,6 @@ void robot::robotMove_Yaxis(int speed, int rotation){
 
 void robot::robotRotation(int speed, int rotation){
 
-
-
     if(speed == 0){
         robot::stop();
 
@@ -430,3 +432,111 @@ void robot::robotRotation(int speed, int rotation){
 
     return;
 }
+
+void robot::getparam(){
+
+    robotNh.getParam("load/x/wheel1/p", robot::wheel_1_x_pid_load[0]);
+    robotNh.getParam("load/x/wheel1/i", robot::wheel_1_x_pid_load[1]);
+    robotNh.getParam("load/x/wheel1/d", robot::wheel_1_x_pid_load[2]);
+
+    robotNh.getParam("load/x/wheel2/p", robot::wheel_2_x_pid_load[0]);
+    robotNh.getParam("load/x/wheel2/i", robot::wheel_2_x_pid_load[1]);
+    robotNh.getParam("load/x/wheel2/d", robot::wheel_2_x_pid_load[2]);
+
+    robotNh.getParam("load/x/wheel3/p", robot::wheel_3_x_pid_load[0]);
+    robotNh.getParam("load/x/wheel3/i", robot::wheel_3_x_pid_load[1]);
+    robotNh.getParam("load/x/wheel3/d", robot::wheel_3_x_pid_load[2]);
+
+    robotNh.getParam("load/x/wheel4/p", robot::wheel_4_x_pid_load[0]);
+    robotNh.getParam("load/x/wheel4/i", robot::wheel_4_x_pid_load[1]);
+    robotNh.getParam("load/x/wheel4/d", robot::wheel_4_x_pid_load[2]);
+
+    robotNh.getParam("load/y/wheel1/p", robot::wheel_1_y_pid_load[0]);
+    robotNh.getParam("load/y/wheel1/i", robot::wheel_1_y_pid_load[1]);
+    robotNh.getParam("load/y/wheel1/d", robot::wheel_1_y_pid_load[2]);
+
+    robotNh.getParam("load/y/wheel2/p", robot::wheel_2_y_pid_load[0]);
+    robotNh.getParam("load/y/wheel2/i", robot::wheel_2_y_pid_load[1]);
+    robotNh.getParam("load/y/wheel2/d", robot::wheel_2_y_pid_load[2]);
+
+    robotNh.getParam("load/y/wheel3/p", robot::wheel_3_y_pid_load[0]);
+    robotNh.getParam("load/y/wheel3/i", robot::wheel_3_y_pid_load[1]);
+    robotNh.getParam("load/y/wheel3/d", robot::wheel_3_y_pid_load[2]);
+
+    robotNh.getParam("load/y/wheel4/p", robot::wheel_4_y_pid_load[0]);
+    robotNh.getParam("load/y/wheel4/i", robot::wheel_4_y_pid_load[1]);
+    robotNh.getParam("load/y/wheel4/d", robot::wheel_4_y_pid_load[2]);
+
+    robotNh.getParam("load/rotation/wheel1/p", robot::wheel_1_rotation_pid_load[0]);
+    robotNh.getParam("load/rotation/wheel1/i", robot::wheel_1_rotation_pid_load[1]);
+    robotNh.getParam("load/rotation/wheel1/d", robot::wheel_1_rotation_pid_load[2]);
+
+    robotNh.getParam("load/rotation/wheel2/p", robot::wheel_2_rotation_pid_load[0]);
+    robotNh.getParam("load/rotation/wheel2/i", robot::wheel_2_rotation_pid_load[1]);
+    robotNh.getParam("load/rotation/wheel2/d", robot::wheel_2_rotation_pid_load[2]);
+
+    robotNh.getParam("load/rotation/wheel3/p", robot::wheel_3_rotation_pid_load[0]);
+    robotNh.getParam("load/rotation/wheel3/i", robot::wheel_3_rotation_pid_load[1]);
+    robotNh.getParam("load/rotation/wheel3/d", robot::wheel_3_rotation_pid_load[2]);
+
+    robotNh.getParam("load/rotation/wheel4/p", robot::wheel_4_rotation_pid_load[0]);
+    robotNh.getParam("load/rotation/wheel4/i", robot::wheel_4_rotation_pid_load[1]);
+    robotNh.getParam("load/rotation/wheel4/d", robot::wheel_4_rotation_pid_load[2]);
+
+
+//--------------------------------------------------------------------------------------------
+
+    robotNh.getParam("unload/x/wheel1/p", robot::wheel_1_x_pid_unload[0]);
+    robotNh.getParam("unload/x/wheel1/i", robot::wheel_1_x_pid_unload[1]);
+    robotNh.getParam("unload/x/wheel1/d", robot::wheel_1_x_pid_unload[2]);
+
+    robotNh.getParam("unload/x/wheel2/p", robot::wheel_2_x_pid_unload[0]);
+    robotNh.getParam("unload/x/wheel2/i", robot::wheel_2_x_pid_unload[1]);
+    robotNh.getParam("unload/x/wheel2/d", robot::wheel_2_x_pid_unload[2]);
+
+    robotNh.getParam("unload/x/wheel3/p", robot::wheel_3_x_pid_unload[0]);
+    robotNh.getParam("unload/x/wheel3/i", robot::wheel_3_x_pid_unload[1]);
+    robotNh.getParam("unload/x/wheel3/d", robot::wheel_3_x_pid_unload[2]);
+
+    robotNh.getParam("unload/x/wheel4/p", robot::wheel_4_x_pid_unload[0]);
+    robotNh.getParam("unload/x/wheel4/i", robot::wheel_4_x_pid_unload[1]);
+    robotNh.getParam("unload/x/wheel4/d", robot::wheel_4_x_pid_unload[2]);
+
+    robotNh.getParam("unload/y/wheel1/p", robot::wheel_1_y_pid_unload[0]);
+    robotNh.getParam("unload/y/wheel1/i", robot::wheel_1_y_pid_unload[1]);
+    robotNh.getParam("unload/y/wheel1/d", robot::wheel_1_y_pid_unload[2]);
+
+    robotNh.getParam("unload/y/wheel2/p", robot::wheel_2_y_pid_unload[0]);
+    robotNh.getParam("unload/y/wheel2/i", robot::wheel_2_y_pid_unload[1]);
+    robotNh.getParam("unload/y/wheel2/d", robot::wheel_2_y_pid_unload[2]);
+
+    robotNh.getParam("unload/y/wheel3/p", robot::wheel_3_y_pid_unload[0]);
+    robotNh.getParam("unload/y/wheel3/i", robot::wheel_3_y_pid_unload[1]);
+    robotNh.getParam("unload/y/wheel3/d", robot::wheel_3_y_pid_unload[2]);
+
+    robotNh.getParam("unload/y/wheel4/p", robot::wheel_4_y_pid_unload[0]);
+    robotNh.getParam("unload/y/wheel4/i", robot::wheel_4_y_pid_unload[1]);
+    robotNh.getParam("unload/y/wheel4/d", robot::wheel_4_y_pid_unload[2]);
+
+    robotNh.getParam("unload/rotation/wheel1/p", robot::wheel_1_rotation_pid_unload[0]);
+    robotNh.getParam("unload/rotation/wheel1/i", robot::wheel_1_rotation_pid_unload[1]);
+    robotNh.getParam("unload/rotation/wheel1/d", robot::wheel_1_rotation_pid_unload[2]);
+
+    robotNh.getParam("unload/rotation/wheel2/p", robot::wheel_2_rotation_pid_unload[0]);
+    robotNh.getParam("unload/rotation/wheel2/i", robot::wheel_2_rotation_pid_unload[1]);
+    robotNh.getParam("unload/rotation/wheel2/d", robot::wheel_2_rotation_pid_unload[2]);
+
+    robotNh.getParam("unload/rotation/wheel3/p", robot::wheel_3_rotation_pid_unload[0]);
+    robotNh.getParam("unload/rotation/wheel3/i", robot::wheel_3_rotation_pid_unload[1]);
+    robotNh.getParam("unload/rotation/wheel3/d", robot::wheel_3_rotation_pid_unload[2]);
+
+    robotNh.getParam("unload/rotation/wheel4/p", robot::wheel_4_rotation_pid_unload[0]);
+    robotNh.getParam("unload/rotation/wheel4/i", robot::wheel_4_rotation_pid_unload[1]);
+    robotNh.getParam("unload/rotation/wheel4/d", robot::wheel_4_rotation_pid_unload[2]);
+    
+    
+
+    return;
+}
+
+

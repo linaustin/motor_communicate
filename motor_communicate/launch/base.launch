@@ -2,6 +2,7 @@
 
     <include file = "$(find velodyne_pointcloud)/launch/VLP16_points.launch" ns = "laser_driver" /> 
     <include file = "$(find hector_slam_launch)/launch/tutorial.launch" ns = "slam" /> 
+    <rosparam command = "load" file = "$(find motor_communicate)/param/pid_value.yaml" />
     <node name = "navgation" pkg = "nav" type = "move" output = "screen" />
     <node name = "motor_control" pkg = "motor_communicate" type = "motor_communicate"/>
 
